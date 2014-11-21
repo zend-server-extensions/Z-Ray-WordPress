@@ -127,9 +127,7 @@ class WordPress
                     } else {
 
                     }
-                    /*if(is_array($hooker['hookFunction']) && !is_object($hooker['hookFunction'][0])){
-                        var_dump($hooker['hookFunction'][0]);die;
-                    }*/
+                    
                     $hookers[$hookName][$hookKey] = array(
                         'File (Execution Time)' => $hooker['file'] . ' (' . $hooker['executionTime'] . 'ms)',
                         'Hook Type' => $hooker['hookType']
@@ -138,7 +136,6 @@ class WordPress
             }
         }
         $storage['hooks'][] = $hookers;
-        //var_dump($storage['hooks']);die;
 
         //Filters List
         if (count($this->_filters) > 0) {
