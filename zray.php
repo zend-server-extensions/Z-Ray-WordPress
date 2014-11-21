@@ -1,7 +1,7 @@
 <?php
 
 
-class Wordpress
+class WordPress
 {
     private $zre;
     private $_profilePlugins = array();
@@ -265,7 +265,7 @@ class Wordpress
 
 $zre = new ZRayExtension('wordpress');
 
-$zrayWordpress = new Wordpress($zre);
+$zrayWordPress = new WordPress($zre);
 
 $zre->setMetadata(array(
     'logo' => __DIR__ . DIRECTORY_SEPARATOR . 'logo.png',
@@ -273,18 +273,18 @@ $zre->setMetadata(array(
 
 $zre->setEnabledAfter('wp_initial_constants');
 
-$zre->traceFunction('wp', function () use ($zre, $zrayWordpress) {
-    $zrayWordpress->initProfiler('plugins');
-    $zrayWordpress->initProfiler('mu-plugins');
-    $zrayWordpress->initProfiler('themes');
+$zre->traceFunction('wp', function () use ($zre, $zrayWordPress) {
+    $zrayWordPress->initProfiler('plugins');
+    $zrayWordPress->initProfiler('mu-plugins');
+    $zrayWordPress->initProfiler('themes');
 
 }, function () {
 });
 
-$zre->traceFunction('wp_initial_constants', function () use ($zre, $zrayWordpress) {
-    $zrayWordpress->initHookCatcher();
+$zre->traceFunction('wp_initial_constants', function () use ($zre, $zrayWordPress) {
+    $zrayWordPress->initHookCatcher();
 }, function () {
 });
 
 $zre->traceFunction('wp_cache_close', function () {
-    }, array($zrayWordpress, 'wpRunExit'));
+    }, array($zrayWordPress, 'wpRunExit'));
