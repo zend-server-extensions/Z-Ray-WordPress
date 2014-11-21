@@ -161,7 +161,7 @@ class Wordpress {
 		$plugins_dir_name = array_pop($plugin_dir_array);
 		$muplugins_dir_array = explode('\\',realpath(WPMU_PLUGIN_DIR));
 		$muplugins_dir_name = array_pop($muplugins_dir_array);
-		if(preg_match('/'.$plugins_dir_name.'\/(.*?)\//',$filename,$match)||preg_match('/'.$muplugins_dir_name.'\/(.*?)\//',$filename,$match)){
+		if(preg_match('~'.$plugins_dir_name.'/(.*?)/~',$filename,$match)||preg_match('~'.$muplugins_dir_name.'/(.*?)/~',$filename,$match)){
 			$plugin=$match[1];
 			if(!isset($this->_profilePlugins[$plugin])){
 				$this->_profilePlugins[$plugin]=0;
@@ -172,7 +172,7 @@ class Wordpress {
 	public function themesFuncEnd($context,&$storage,$filename){
 	    $theme_root_array = explode('\\',realpath(get_theme_root()));
 		$theme_dir_name = array_pop($theme_root_array);
-		if(preg_match('/'.preg_quote($theme_dir_name, '/').'\/(.*?)\//',$filename,$match)){
+		if(preg_match('~'.preg_quote($theme_dir_name, '/').'/(.*?)/~',$filename,$match)){
 			$theme=$match[1];
 			if(!isset($this->_profileThemes[$theme])){
 				$this->_profileThemes[$theme]=array();
@@ -218,7 +218,7 @@ class Wordpress {
 		);
 	}
 	public function registerFilter($context,$type){
-		if(!preg_match('/plugins\/(.*?)\//',$context['calledFromFile'])){
+		if(!preg_match('~plugins/(.*?)/~',$context['calledFromFile'])){
 			return; //we want only plugins apply_filters
 		}
 		if(!isset($this->_filters[$context['functionArgs'][0]])){
