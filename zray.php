@@ -37,8 +37,9 @@ class Wordpress {
 	public function wpRunExit($context, &$storage){
 		global $wp_object_cache,$wp_version;
 		
+
 	    $this->storeCacheObjects($wp_object_cache, $storage);
-		$this->storeHitsStatistics($storage);
+		$this->storeHitsStatistics($wp_object_cache, $storage);
 		
 		//Crons
 		$doing_cron=get_transient( 'doing_cron' );
@@ -283,23 +284,9 @@ class Wordpress {
 	    $storage['cacheObjects'] = $data_array;
 	}
 	
-	private function storeHitsStatistics(&$storage) {
-	    
-	    $totalHits = 0;
-	    $totalMisses = 0;
-	    foreach ($this->_cache_hits as $group) {
-	        foreach ($group as $key=>$hits) {
-	            $totalHits += $hits;
-	        }
-	    }
-	    foreach ($this->_cache_misses as $group) {
-	        foreach ($group as $key=>$misses) {
-	            $totalMisses += $misses;
-	        }
-	    }
-	    
+	private function storeHitsStatistics($wp_object_cache, &$storage) {
 	    // General hits/misses data
-	    $storage['cacheStats'] = array('hits' => $totalHits, 'misses' => $totalMisses);
+	    $storage['cacheStats'] = array('hits' => $wp_object_cache->cache_hits, 'misses' => $wp_object_cache->cache_misses);
 	}
 	
 }
