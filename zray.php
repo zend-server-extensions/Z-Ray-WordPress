@@ -35,31 +35,10 @@ class Wordpress {
 	}
 	
 	public function wpRunExit($context, &$storage){
-		global $wp_object_cache,$wp_version;	
-		//Cache Objects
-		$data_array=array();
-		foreach ($wp_object_cache->cache as $group => $group_items) {
-		    $group_size = 0;
-		    $group_hits = 0;
-		    $group_item_array=array();
-			foreach($group_items as $group_item_name => $group_item) {
-		        
-			    $item_size =  number_format( strlen( serialize( $group_item ) ) / 1024, 2 );
-				//$group_array[$group][$group_item_name]['size'] = $item_size .'k';
-				$group_size += $item_size;
-				
-				$hits = 0;
-				if (isset($this->_cache_hits[$group][$group_item_name])) {
-				    $hits = $this->_cache_hits[$group][$group_item_name];
-				    //$group_array[$group][$group_item_name]['hits'] = $hits;
-				    $group_hits += $hits;
-				}
-				$group_item_array[] = array('name' => $group_item_name, 'size' => $item_size .'k' , 'hits' => $hits);
-			}
-			// we lose temprorally $group_hits
-			$data_array[] = array('name' => $group, 'size' => $group_size .'k' , 'hits' => $group_item_array);
-		}
-		$storage['cacheObjects'] = $data_array;
+		global $wp_object_cache,$wp_version;
+		
+	    $this->storeCacheObjects($wp_object_cache, $storage);
+		$this->storeHitsStatistics($storage);
 		
 		//Crons
 		$doing_cron=get_transient( 'doing_cron' );
@@ -162,9 +141,7 @@ class Wordpress {
 					}else{
 						
 					}
-					/*if(is_array($hooker['hookFunction']) && !is_object($hooker['hookFunction'][0])){
-						var_dump($hooker['hookFunction'][0]);die;
-					}*/
+					
 					$hookers[$hookName][$hookKey]=array(
 						'File (Execution Time)'=>$hooker['file'].' ('.$hooker['executionTime'].'ms)',
 						'Hook Type'=>$hooker['hookType']
@@ -173,7 +150,6 @@ class Wordpress {
 			}
 		}
 		$storage['hooks'][]=$hookers;
-		//var_dump($storage['hooks']);die;
 		
 		//Filters List
 		if(count($this->_filters)>0){
@@ -281,6 +257,51 @@ class Wordpress {
 			$this->registerFilter($context,'apply_filters');
 		});*/
 	}
+	
+	private function storeCacheObjects($wp_object_cache, &$storage) {
+	     
+	    $data_array=array();
+	    foreach ($wp_object_cache->cache as $group => $group_items) {
+	        $group_size = 0;
+	        $group_hits = 0;
+	        $group_item_array=array();
+	        foreach($group_items as $group_item_name => $group_item) {
+	    
+	            $item_size =  number_format( strlen( serialize( $group_item ) ) / 1024, 2 );
+	            $group_size += $item_size;
+	    
+	            $hits = 0;
+	            if (isset($this->_cache_hits[$group][$group_item_name])) {
+	                $hits = $this->_cache_hits[$group][$group_item_name];
+	                $group_hits += $hits;
+	            }
+	            $group_item_array[] = array('name' => $group_item_name, 'size' => $item_size .'k' , 'hits' => $hits);
+	        }
+	        // we lose temprorally $group_hits
+	        $data_array[] = array('name' => $group, 'size' => $group_size .'k' , 'hits' => $group_item_array);
+	    }
+	    $storage['cacheObjects'] = $data_array;
+	}
+	
+	private function storeHitsStatistics(&$storage) {
+	    
+	    $totalHits = 0;
+	    $totalMisses = 0;
+	    foreach ($this->_cache_hits as $group) {
+	        foreach ($group as $key=>$hits) {
+	            $totalHits += $hits;
+	        }
+	    }
+	    foreach ($this->_cache_misses as $group) {
+	        foreach ($group as $key=>$misses) {
+	            $totalMisses += $misses;
+	        }
+	    }
+	    
+	    // General hits/misses data
+	    $storage['cacheStats'] = array('hits' => $totalHits, 'misses' => $totalMisses);
+	}
+	
 }
 
 $zre = new ZRayExtension('wordpress');
