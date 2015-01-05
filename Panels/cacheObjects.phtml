@@ -1,0 +1,77 @@
+<?php 
+$tableParams = array(
+	'tableId' 			=> 'wordpress-cache-objects-tree',
+    'tableWidth'        => '4',
+);
+?>
+
+<?php echo $this->zrayTable($tableParams); //zrayTableHtml ?>
+<script type="text/javascript">
+
+(function() {
+	var storage = zray.getStorage('wordpressCacheObjectsTree');
+	// create main table
+	var maintable = zray.createGeneralTreeTable(storage, jQuery('#<?php echo $tableParams['tableId']; ?>'));
+	maintable.setColumns([{
+		label: 'name',
+		propertyName: 'name',
+		width: '25%',
+		attributes: {'class': 'zdb-tree-table-cell-path zdb-ellipsis zdb-monospace'},
+		getHtml: function(val, rec) {
+			var cushion = $zendDevBar('<div>');
+			/// either the node has children or this is an object with properties
+			if (rec.children > 0) {
+				cushion.addClass('zdb-tree-table-cell-path-expandable');
+			}
+			cushion.addClass('zdb-tree-table-cell-path-display');
+			
+			if (rec.parent.length > 1) {
+				cushion.css('margin-left', (18 * rec.level) + 'px');
+			}
+
+			cushion.click(function(event){
+				$zendDevBar(event.target).parent('td').click();
+			});
+
+			var formattedText = val;
+			if (typeof formattedText == 'string' && formattedText.trim().length == 0) {
+				formattedText = '[Empty String Key]';
+				cushion.addClass('zdb-tree-table-system-data');
+			} else if (formattedText > 32) {
+				cushion.attr('title', formattedText);
+				formattedText = zendDevBar.shorten(formattedText, 32);
+			}
+			
+			return cushion.text(formattedText);
+		}
+	},
+	{
+		label: 'size',
+		propertyName: 'size',
+		width: '75%',
+		attributes: {'class': 'zdb-monospace zdb-ellipsis'},
+		getHtml: function(val, rec) {
+			var cushion = $zendDevBar('<div>');
+			cushion.attr('title', val);
+			return cushion.text(val);
+		}
+	},
+	{
+		label: 'hits',
+		propertyName: 'hits',
+		width: '75%',
+		attributes: {'class': 'zdb-monospace zdb-ellipsis'},
+		getHtml: function(val, rec) {
+			var cushion = $zendDevBar('<div>');
+			cushion.attr('title', val);
+			return cushion.text(val);
+		}
+	}]);
+	// create main table - end
+
+	zray.registerDataHandler('wordpress', 'cacheObjects', function(extensionData, requestData) {
+		console.log(extensionData);
+		storage.setData(extensionData);
+	});
+})();
+</script>
