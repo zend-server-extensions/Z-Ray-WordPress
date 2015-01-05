@@ -34,3 +34,16 @@
     color: #404040;
 	padding-left: 9px;
 }
+
+#zend-dev-bar div.generalTableDiv {
+	display: inline-block;
+	width: 40%;
+	vertical-align: middle;
+}
+
+#zend-dev-bar div.pieChartDiv {
+	display: inline-block;
+	width: 59%;
+	vertical-align: middle;
+	padding-top: 50px;
+}
