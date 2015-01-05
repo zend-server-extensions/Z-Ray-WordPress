@@ -49,19 +49,19 @@ class Wordpress {
 			foreach( _get_cron_array() as $time=>$crons ){
 				foreach($crons as $name=>$cron){
 					foreach($cron as $subcron){
-						/*$storage['crons'][] = array(
+						$storage['crons'][] = array(
 							'Hook'=>$name,
 							'Schedule'=>$subcron['schedule'],
 							'Arguments'=>count($subcron['args'])>0 ? print_r($subcron['args'],true) : '',
 							'Next Execution'=>date( 'Y-m-d H:i:s', $time ) . ' (' . human_time_diff( $time ) . (time() > $time  ? ' ago' : '').')'
-						);*/
+						);
 					}
 				}
 			}
 		}
 		
 		//General Info
-		/*$storage['generalInfo'][] = array('Name'=>'Wordpress Version','Value'=>$wp_version);
+		$storage['generalInfo'][] = array('Name'=>'Wordpress Version','Value'=>$wp_version);
 		$storage['generalInfo'][] = array('Name'=>'Debug Mode (WP_DEBUG)','Value'=>WP_DEBUG ? 'On' : 'Off');
 		$storage['generalInfo'][] = array('Name'=>'Debug Log (WP_DEBUG_LOG)','Value'=>WP_DEBUG_LOG ? 'On' : 'Off');
 		$storage['generalInfo'][] = array('Name'=>'Script Debug (SCRIPT_DEBUG)','Value'=>SCRIPT_DEBUG ? 'On' : 'Off');
@@ -69,7 +69,7 @@ class Wordpress {
 		$storage['generalInfo'][] = array('Name'=>'Doing Crons','Value'=>$doing_cron ? 'Yes' : 'No');
 		if ( defined( 'SAVEQUERIES' ) && SAVEQUERIES ) {
 		    $storage['generalInfo'][] = array('Name'=>'Save Queries (SAVEQUERIES)','Value'=>SAVEQUERIES ? 'On' : 'Off');
-		}*/
+		}
 		
 		//Plugins List
 		try{
@@ -110,7 +110,7 @@ class Wordpress {
 					if(in_array($p,$activated_plugins)){
 						$active='Yes'; 
 					}
-					//$storage['plugins'][] = array('Name'=>$plugin['Name'],'Version'=>$plugin['Version'],'Activated'=>$active);
+					$storage['plugins'][] = array('Name'=>$plugin['Name'],'Version'=>$plugin['Version'],'Activated'=>$active);
 				}
 			}
 		}catch(Exception $e){
@@ -118,11 +118,11 @@ class Wordpress {
 		
 		if (count($this->_profilePlugins)>0) {
 			foreach($this->_profilePlugins as $name => $time){
-				//$storage['pluginsProfiler'][] = array('Name'=>$name,'Load Time (microseconds)'=>$time);
+				$storage['pluginsProfiler'][] = array('Name'=>$name,'Load Time (microseconds)'=>$time);
 			}
 		}
 		if (count($this->_profileThemes)>0) {
-			//$storage['themeProfiler'][] = $this->_profileThemes;
+			$storage['themeProfiler'][] = $this->_profileThemes;
 		}
 		//Hooks List
 		$hookers=array();
@@ -152,7 +152,7 @@ class Wordpress {
 				}
 			}
 		}
-		//$storage['hooks'][]=$hookers;
+		$storage['hooks'][]=$hookers;
 		
 		//Filters List
 		if(count($this->_filters)>0){
@@ -165,11 +165,11 @@ class Wordpress {
 						'filter Type'=>$filterer['filterType']
 					);
 				}
-				/*$storage['filters'][]=array(
+				$storage['filters'][]=array(
 					'name'=>$filterName,
 					'File (Execution Time)'=>$filterers,
 					'filter Type'=>''
-				);*/
+				);
 			}
 		}
 	}
