@@ -1,0 +1,36 @@
+@CHARSET "UTF-8";
+
+
+#zend-dev-bar fieldset {
+	width: 500px;
+    margin: 12px;
+    vertical-align: middle;
+    border: 1px solid #e3e3e3;
+    position: relative;
+    background: #FCFCFC;
+}
+
+#zend-dev-bar table#general_table {
+    width: 400px;
+    margin-bottom: 18px;
+    padding: 0;
+    font-size: 13px;
+    border-collapse: collapse;
+}
+
+#zend-dev-bar table th, table td {
+    padding: 10px 10px 9px;
+    line-height: 18px;
+    text-align: left;
+}
+
+#zend-dev-bar span.generalTitle {
+    display: block;
+	font-weight: bold;
+    -webkit-padding-start: 2px;
+    -webkit-padding-end: 2px;
+    border: none;
+	font-size: 13px;
+    color: #404040;
+	padding-left: 9px;
+}
