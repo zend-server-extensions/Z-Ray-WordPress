@@ -70,7 +70,6 @@ $tableParams = array(
 	// create main table - end
 
 	zray.registerDataHandler('wordpress', 'cacheObjects', function(extensionData, requestData) {
-		console.log(extensionData);
 		storage.setData(extensionData);
 	});
 })();
