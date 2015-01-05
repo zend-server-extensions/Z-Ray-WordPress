@@ -7,23 +7,33 @@ $tableParams = array(
 
 <style><?php echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'cacheObjects.css')?></style>
 
-<div class="content clear">
-		<fieldset>
-			<span class="generalTitle">General Statistics</span>
-			<table id=general_table">
-				<tbody>
-				    <tr><td>Hits</td>
-					<td id="hitsCount"></td></tr>
-					
-				    <tr><td>Misses</td>
-					<td id="missesCount"></td></tr>
-			     </tbody>
-			</table>
-        </fieldset>
+<div>
+    <div class="generalTableDiv">
+    		<fieldset>
+    			<span class="generalTitle">General Statistics</span>
+    			<table id=general_table">
+    				<tbody>
+    				    <tr><td>Hits</td>
+    					<td id="hitsCount"></td></tr>
+    					
+    				    <tr><td>Misses</td>
+    					<td id="missesCount"></td></tr>
+    			     </tbody>
+    			</table>
+            </fieldset>
+    </div>
+    
+    <div class="pieChartDiv">
+        <canvas id="cache-statistics-chart" width="200" height="200" />
+    </div>
 </div>
 
 <?php echo $this->zrayTable($tableParams); //zrayTableHtml ?>
+
+
 <script type="text/javascript">
+
+<?php echo $params['resources']['chart']; ?>
 
 (function() {
 	var storage = zray.getStorage('wordpressCacheObjectsTree');
@@ -93,6 +103,30 @@ $tableParams = array(
 	zray.registerDataHandler('wordpress', 'cacheObjects', function(extensionData, requestData) {
 		storage.setData(extensionData);
 	});
+
+
+	(function() {
+		zray.registerDataHandler('wordpress', 'cachePieStats', function(extensionData, requestData) {
+			console.log(extensionData);
+			var colors = [
+	            {'color': '#F7464A', 'highlight': '#FF5A5E'},
+	            {'color': '#46BFBD', 'highlight': '#5AD3D1'},
+	            {'color': '#FDB45C', 'highlight': '#FFC870'},
+	            {'color': '#949FB1', 'highlight': '#A8B3C5'},
+	            {'color': '#4D5360', 'highlight': '#616774'},
+	            {'color': '#b48ead', 'highlight': '#b48eb3'},
+	            {'color': '#5B90BF', 'highlight': '#5bbabf'}
+	        ];
+			var pieData = [];
+			jQuery.each(extensionData, function(key, data) {
+				pieData.push({'label': data.name, 'value': parseFloat(data.count), 'color': colors[key].color, 'highlight': colors[key].highlight});
+			});
+
+	       	var ctx = document.getElementById("cache-statistics-chart").getContext("2d");
+	       	console.log(pieData);
+	       	var myPie = new Chart(ctx).Pie(pieData);
+		});
+	})();
 })();
 </script>
 
