@@ -5,6 +5,23 @@ $tableParams = array(
 );
 ?>
 
+<style><?php echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'cacheObjects.css')?></style>
+
+<div class="content clear">
+		<fieldset>
+			<span class="generalTitle">General Statistics</span>
+			<table id=general_table">
+				<tbody>
+				    <tr><td>Hits</td>
+					<td id="hitsCount"></td></tr>
+					
+				    <tr><td>Misses</td>
+					<td id="missesCount"></td></tr>
+			     </tbody>
+			</table>
+        </fieldset>
+</div>
+
 <?php echo $this->zrayTable($tableParams); //zrayTableHtml ?>
 <script type="text/javascript">
 
@@ -69,8 +86,13 @@ $tableParams = array(
 	}]);
 	// create main table - end
 
+	zray.registerDataHandler('wordpress', 'cacheStats', function(statsData, requestData) {
+		$zendDevBar('#hitsCount').text(statsData[0]);
+		$zendDevBar('#missesCount').text(statsData[1]);
+	});
 	zray.registerDataHandler('wordpress', 'cacheObjects', function(extensionData, requestData) {
 		storage.setData(extensionData);
 	});
 })();
 </script>
+
