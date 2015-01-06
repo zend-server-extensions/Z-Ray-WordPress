@@ -22,6 +22,9 @@ class Module extends \ZRay\ZRayModule {
 	                'logo'          => 'logo.png',
 	                'menuTitle' 	=> 'Cache Objects',
 	                'panelTitle'	=> 'Cache Objects Tree Table',
+	                'resources'     => array(
+	                    'chart' => 'chart.js'
+	                )
 	            ),
 	         )
 	    );
