@@ -47,3 +47,10 @@
 	vertical-align: middle;
 	padding-top: 50px;
 }
+
+#zend-dev-bar span.legendColorSpan {
+	height: 10px;
+	display: inline-block;
+	width: 10px;
+	margin-right: 7px;
+}
