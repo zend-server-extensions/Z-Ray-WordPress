@@ -17,6 +17,8 @@ $tableParams = array(
     			     <td id="hitsCount"></td>
     			     <td>Misses:</td>
     			     <td id="missesCount"></td>
+    			     <td>Total Size:</td>
+    			     <td id="totalSize"></td>
     			</tr>
     	     </tbody>
     	</table>
@@ -103,6 +105,7 @@ $tableParams = array(
 	zray.registerDataHandler('wordpress', 'cacheStats', function(statsData, requestData) {
 		$zendDevBar('#hitsCount').text(statsData[0]);
 		$zendDevBar('#missesCount').text(statsData[1]);
+		$zendDevBar('#totalSize').text(statsData[2]);
 	});
 	zray.registerDataHandler('wordpress', 'cacheObjects', function(extensionData, requestData) {
 		storage.setData(extensionData);
