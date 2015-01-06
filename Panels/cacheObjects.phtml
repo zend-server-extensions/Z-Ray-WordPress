@@ -107,7 +107,6 @@ $tableParams = array(
 
 	(function() {
 		zray.registerDataHandler('wordpress', 'cachePieStats', function(extensionData, requestData) {
-			console.log(extensionData);
 			var colors = [
 	            {'color': '#F7464A', 'highlight': '#FF5A5E'},
 	            {'color': '#46BFBD', 'highlight': '#5AD3D1'},
@@ -123,7 +122,6 @@ $tableParams = array(
 			});
 
 	       	var ctx = document.getElementById("cache-statistics-chart").getContext("2d");
-	       	console.log(pieData);
 	       	var myPie = new Chart(ctx).Pie(pieData);
 		});
 	})();
