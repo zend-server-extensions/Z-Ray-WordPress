@@ -7,29 +7,32 @@ $tableParams = array(
 
 <style><?php echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'cacheObjects.css')?></style>
 
-<div>
-    <div class="generalTableDiv">
-    		<fieldset>
-    			<span class="generalTitle">General Statistics</span>
-    			<table id=general_table">
-    				<tbody>
-    				    <tr><td>Hits</td>
-    					<td id="hitsCount"></td></tr>
-    					
-    				    <tr><td>Misses</td>
-    					<td id="missesCount"></td></tr>
-    			     </tbody>
-    			</table>
-            </fieldset>
-    </div>
+<div class="generalTableDiv">
+    <fieldset>
+    	<table id=general_table">
+    		<tbody>
+    		    <tr>
+    		         <td><span class="generalTitle">General Statistics:</span></td>
+    		         <td>Hits:</td>
+    			     <td id="hitsCount"></td>
+    			     <td>Misses:</td>
+    			     <td id="missesCount"></td>
+    			</tr>
+    	     </tbody>
+    	</table>
+   </fieldset>
+</div>
     
-    <div class="pieChartDiv">
-        <canvas id="cache-statistics-chart" width="200" height="200" />
-        <div id="cache-statistics-chart-lagend" width="100" height="100" ></div>
+<div>
+    
+    <div class="pieChartDiv"><canvas id="cache-statistics-chart" width="200" height="200" /></div>
+    
+    <div class="pieLegendDiv" id="cache-statistics-chart-lagend" width="100" height="100" ></div>
+    
+    <div class="cacheTableDiv">
+    <?php echo $this->zrayTable($tableParams); //zrayTableHtml ?>
     </div>
 </div>
-
-<?php echo $this->zrayTable($tableParams); //zrayTableHtml ?>
 
 
 <script type="text/javascript">
@@ -43,7 +46,7 @@ $tableParams = array(
 	maintable.setColumns([{
 		label: 'name',
 		propertyName: 'name',
-		width: '25%',
+		width: '50%',
 		attributes: {'class': 'zdb-tree-table-cell-path zdb-ellipsis zdb-monospace'},
 		getHtml: function(val, rec) {
 			var cushion = $zendDevBar('<div>');
@@ -76,7 +79,7 @@ $tableParams = array(
 	{
 		label: 'size',
 		propertyName: 'size',
-		width: '75%',
+		width: '25%',
 		attributes: {'class': 'zdb-monospace zdb-ellipsis'},
 		getHtml: function(val, rec) {
 			var cushion = $zendDevBar('<div>');
@@ -87,7 +90,7 @@ $tableParams = array(
 	{
 		label: 'hits',
 		propertyName: 'hits',
-		width: '75%',
+		width: '25%',
 		attributes: {'class': 'zdb-monospace zdb-ellipsis'},
 		getHtml: function(val, rec) {
 			var cushion = $zendDevBar('<div>');
