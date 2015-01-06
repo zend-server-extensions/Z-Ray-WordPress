@@ -11,10 +11,8 @@ class Module extends \ZRay\ZRayModule {
 			),
 	        // configure  custom panels
             'defaultPanels' => array(
-//                 'crons' => false,
-//                 'generalInfo' => false,
-//                 'hooks' => false,
-//                 'plugins' => false,
+                'cacheStats' => false,
+                'cachePieStats' => false,
              ),
 	        'panels' => array(
 	            'cacheObjects' => array(
