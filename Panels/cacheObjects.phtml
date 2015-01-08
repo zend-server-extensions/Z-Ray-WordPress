@@ -105,7 +105,7 @@ $tableParams = array(
 	zray.registerDataHandler('wordpress', 'cacheStats', function(statsData, requestData) {
 		$zendDevBar('#hitsCount').text(statsData[0]);
 		$zendDevBar('#missesCount').text(statsData[1]);
-		$zendDevBar('#totalSize').text(statsData[2]);
+		$zendDevBar('#totalSize').text(statsData[2] + " Kb");
 	});
 	zray.registerDataHandler('wordpress', 'cacheObjects', function(extensionData, requestData) {
 		storage.setData(extensionData);
