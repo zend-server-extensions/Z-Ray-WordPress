@@ -52,8 +52,8 @@ class Wordpress {
 						$storage['crons'][] = array(
 							'Hook'=>$name,
 							'Schedule'=>$subcron['schedule'],
-							'Arguments'=>count($subcron['args'])>0 ? print_r($subcron['args'],true) : '',
-							'Next Execution'=>date( 'Y-m-d H:i:s', $time ) . ' (' . human_time_diff( $time ) . (time() > $time  ? ' ago' : '').')'
+							'Next Execution'=>human_time_diff( $time ) . (time() > $time  ? ' ago' : ''),
+							'Arguments'=>count($subcron['args'])>0 ? print_r($subcron['args'],true) : ''
 						);
 					}
 				}
