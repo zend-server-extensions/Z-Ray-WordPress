@@ -7,33 +7,38 @@ $tableParams = array(
 
 <style><?php echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'cacheObjects.css')?></style>
 
-<div class="generalTableDiv">
-    <fieldset>
-    	<table id=general_table">
-    		<tbody>
-    		    <tr>
-    		         <td><span class="generalTitle">General Statistics:</span></td>
-    		         <td>Hits:</td>
-    			     <td id="hitsCount"></td>
-    			     <td>Misses:</td>
-    			     <td id="missesCount"></td>
-    			     <td>Total Size:</td>
-    			     <td id="totalSize"></td>
-    			</tr>
-    	     </tbody>
-    	</table>
-   </fieldset>
-</div>
     
 <div>
     
-    <div class="pieChartDiv"><canvas id="cache-statistics-chart" width="200" height="200" /></div>
+    <div>
+        <div>
+            <div class="pieChartDiv"><canvas id="cache-statistics-chart" width="200" height="200" /></div>
+            <div class="pieLegendDiv" id="cache-statistics-chart-lagend" width="100" height="100" ></div>
+        </div>
     
-    <div class="pieLegendDiv" id="cache-statistics-chart-lagend" width="100" height="100" ></div>
-    
-    <div class="cacheTableDiv">
-    <?php echo $this->zrayTable($tableParams); //zrayTableHtml ?>
-    </div>
+        <div class="generalTableDiv">
+              <fieldset>
+            	<table id=general_table">
+            		<tbody>
+            		    <tr>
+            		         <td><span class="generalTitle">General Statistics:</span></td>
+            		         <td>Hits:</td>
+            			     <td id="hitsCount"></td>
+            			     <td>Misses:</td>
+            			     <td id="missesCount"></td>
+            			     <td>Total Size:</td>
+            			     <td id="totalSize"></td>
+            			</tr>
+            	     </tbody>
+            	</table>
+              </fieldset>
+       </div>
+   </div>
+   
+   <div class="cacheTableDiv">
+     <?php echo $this->zrayTable($tableParams); //zrayTableHtml ?>
+   </div>
+        
 </div>
 
 

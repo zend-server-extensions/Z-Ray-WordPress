@@ -49,7 +49,7 @@
 	padding-bottom: 8px;
 	float: left;
 	padding-left: 20px;
-	padding-top: 40px;
+	padding-top: 15px;
 	vertical-align: middle;
 }
 
@@ -62,7 +62,7 @@
 
 #zend-dev-bar div.pieLegendDiv {
 	float: left;
-	width: 22%;
+	width: 15%;
 	padding-top: 40px;
 }
 
@@ -72,5 +72,5 @@
 	padding-left: 8px;
 	padding-bottom: 8px;
 	display: inline-block;
-	width: 62%;
+	width: 69%;
 }
