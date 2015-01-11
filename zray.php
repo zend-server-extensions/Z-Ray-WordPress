@@ -21,13 +21,13 @@ class Wordpress {
         $key = $context["functionArgs"][0];
         
 	    if ($context['locals']["found"]) {
-	        if (isset($this->_cache_hits[$group]) && $this->_cache_hits[$group][$key]) {	            
+	        if (isset($this->_cache_hits[$group]) && isset($this->_cache_hits[$group][$key])) {
 	           $this->_cache_hits[$group][$key]++;
 	        } else {
 	           $this->_cache_hits[$group][$key] = 1;
 	        }
 	   } else {
-	       if (isset($this->_cache_misses[$group]) && $this->_cache_misses[$group][$key]) {
+	       if (isset($this->_cache_misses[$group]) && isset($this->_cache_misses[$group][$key])) {
 	           $this->_cache_misses[$group][$key]++;
 	       } else {
 	           $this->_cache_misses[$group][$key] = 1;
@@ -38,7 +38,6 @@ class Wordpress {
 	public function wpRunExit($context, &$storage){
 		global $wp_object_cache,$wp_version;
 		
-
 	    $this->storeCacheObjects($wp_object_cache, $storage);
 		$this->storeHitsStatistics($wp_object_cache, $storage);
 		$this->storeCachePieStatistics($storage);
@@ -124,15 +123,13 @@ class Wordpress {
 		if (count($this->_profileThemes)>0) {
 			$storage['themeProfiler'][] = $this->_profileThemes;
 		}
+		
+				
 		//Hooks List
 		$hookers=array();
 		if(count($this->_hooks)>0){
 			foreach($this->_hooks as $hookName => $hook){
-				if(!array_key_exists($hookName,$hookers)){
-					$hookers[$hookName]=array();
-				}
 				foreach($hook as $hooker){
-					//retrieve the function (maybe closure / object) name
 					if(is_string($hooker['hookFunction'])){
 						$hookKey = $hooker['hookFunction'];
 					}elseif(is_array($hooker['hookFunction'])){
@@ -144,15 +141,19 @@ class Wordpress {
 					}else{
 						
 					}
-					
-					$hookers[$hookName][$hookKey]=array(
-						'File (Execution Time)'=>$hooker['file'].' ('.$hooker['executionTime'].'ms)',
-						'Hook Type'=>$hooker['hookType']
+					$hookers[]=array(
+						'function'=>$hookKey,
+						'file'=>$hooker['file'],
+						'line'=>$hooker['line'],
+						'hookType'=>$hooker['hookType'],
+						'executionTime'=>$hooker['executionTime'].'ms',
+						'hookSource'=>$hooker['hookSource'],
+						'priority'=>$hooker['priority']
 					);
 				}
 			}
 		}
-		$storage['hooks'][]=$hookers;
+		$storage['hooks']=$hookers;
 		
 		//Filters List
 		if(count($this->_filters)>0){
@@ -174,11 +175,7 @@ class Wordpress {
 		}
 	}
 	public function pluginsFuncEnd($context,&$storage,$filename){
-	    $plugin_dir_array = explode('\\',realpath(WP_PLUGIN_DIR));
-		$plugins_dir_name = array_pop($plugin_dir_array);
-		$muplugins_dir_array = explode('\\',realpath(WPMU_PLUGIN_DIR));
-		$muplugins_dir_name = array_pop($muplugins_dir_array);
-		if(preg_match('/'.$plugins_dir_name.'\/(.*?)\//',$filename,$match)||preg_match('/'.$muplugins_dir_name.'\/(.*?)\//',$filename,$match)){
+		if(preg_match('/'.$this->plugins_dir_name.'\/(.*?)\//',$filename,$match)||preg_match('/'.$this->muplugins_dir_name.'\/(.*?)\//',$filename,$match)){
 			$plugin=$match[1];
 			if(!isset($this->_profilePlugins[$plugin])){
 				$this->_profilePlugins[$plugin]=0;
@@ -198,6 +195,10 @@ class Wordpress {
 		}
 	}
 	public function initProfiler($type='plugins'){
+		$plugin_dir_array = explode('\\',realpath(WP_PLUGIN_DIR));
+		$this->plugins_dir_name = array_pop($plugin_dir_array);
+		$muplugins_dir_array = explode('\\',realpath(WPMU_PLUGIN_DIR));
+		$this->muplugins_dir_name = array_pop($muplugins_dir_array);
 		switch($type){
 			case 'themes':
 				$func='themesFuncEnd';
@@ -224,14 +225,32 @@ class Wordpress {
 		}
 	}
 	public function registerHook($context,$type){
+		$type=str_replace('add_','',$type);
+		if(defined('WP_PLUGIN_DIR')&&strpos($context['calledFromFile'],realpath(WP_PLUGIN_DIR))!==false){
+			$matches=explode(DIRECTORY_SEPARATOR,str_replace(realpath(WP_PLUGIN_DIR),'',$context['calledFromFile']));
+			$hookSource=$matches[1];
+		}elseif(defined('WPMU_PLUGIN_DIR')&&strpos($context['calledFromFile'],realpath(WPMU_PLUGIN_DIR))!==false){
+			$matches=explode(DIRECTORY_SEPARATOR,str_replace(realpath(WP_PLUGIN_DIR),'',$context['calledFromFile']));
+			$hookSource=$matches[1];
+		}elseif(function_exists('get_theme_root')&&strpos($context['calledFromFile'],realpath(get_theme_root())!==false)){
+			$matches=explode(DIRECTORY_SEPARATOR,str_replace(realpath(WP_PLUGIN_DIR),'',$context['calledFromFile']));
+			$hookSource=$matches[1];
+		}else{
+			$hookSource='Core';
+			$type.=' (Core)';
+		}
+		
 		if(!isset($this->_hooks[$context['functionArgs'][0]])){
 			$this->_hooks[$context['functionArgs'][0]]=array();
 		}
 		$this->_hooks[$context['functionArgs'][0]][] = array(
 			'hookFunction'=>$context['functionArgs'][1],
-			'file'=>$context['calledFromFile'].':'.$context['calledFromLine'],
+			'file'=>$context['calledFromFile'],
+			 'line'=>$context['calledFromLine'],
 			'executionTime'=>$context['durationExclusive'],
-			'hookType'=>$type
+			'hookSource'=>$hookSource,
+			'hookType'=>$type,
+			'priority'=>isset($context['functionArgs'][2]) ? $context['functionArgs'][2] : '10',
 		);
 	}
 	public function registerFilter($context,$type){

@@ -26,6 +26,14 @@ class Module extends \ZRay\ZRayModule {
 	                    'chart' => 'chart.js'
 	                )
 	            ),
+				'hooks' => array(
+					'display'       => true,
+	                'logo'          => 'logo.png',
+	                'menuTitle' 	=> 'Hooks',
+	                'panelTitle'	=> 'Hooks',
+	                'searchId' 		=> 'hooks-summary-table-search',
+	                'pagerId'		=> 'hooks-summary-table-pager',
+				)
 	         )
 	    );
 	}	

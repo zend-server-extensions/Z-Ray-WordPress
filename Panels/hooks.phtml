@@ -1,0 +1,146 @@
+<?php 
+$tableParams = array(
+	'tableId' 			=> 'hooks-table',
+    'tableWidth'        => '3',
+    'summaryTableId'    => 'hooks-summary-table',
+    'summaryTableWidth' => '1',
+);
+?>
+
+<?php echo $this->zrayTable($tableParams); //zrayTableHtml ?>
+
+<script type="text/javascript">
+(function() {
+	var storage = zray.getStorage('hooks');
+
+	// create main table
+	var maintable = zray.createTable(storage, jQuery('#<?php echo $tableParams['tableId']; ?>'));
+	var cols = [
+		{
+			"label": "Function",
+			"propertyName": "function",
+			"sortable": true,
+		},
+		{
+			"label": "File Name",
+			"propertyName": "fileLine",
+			"sortable": true,
+		},
+		{
+			"label": "Hook Source",
+			"propertyName": "hookSource",
+			"sortable": true,
+		},
+		{
+			"label": "Priority",
+			"propertyName": "priority",
+			"sortable": true,
+		},
+		{
+			"label": "Hook Type",
+			"propertyName": "hookType",
+			"sortable": true,
+		},
+		{
+			"label": "Execution Time",
+			"propertyName": "executionTime",
+			"sortable": true,
+		}
+	];
+	if(zendDevBar.showInIde){
+		cols.push({
+			label: 'Actions',
+			tooltip: 'Event actions',
+			propertyName: 'ruleId',
+			width: '78',
+			getHtml: function(val, rec) {
+				var actionsWrapper = $zendDevBar('<div></div>');
+				
+				
+				var showInIdeElem = $zendDevBar('<div class="zdb-table-action zdb-pull-left zdb-show-in-ide" title="Show in IDE"></div>'); 
+				
+				showInIdeElem.click(function() {
+					zendDevBar.spinner.show($zendDevBar(this).get(0));
+					zendDevBar.showInIde(rec.file,rec.line,document.location.href);
+				});
+				actionsWrapper.append(showInIdeElem);
+				
+				
+				return actionsWrapper;
+			}
+		});
+	}
+	maintable.setColumns(cols);
+	// create main table - end
+
+	// create the summary table
+	var summaryTable = zray.createSummaryTable(storage, jQuery('#<?php echo $tableParams['summaryTableId']; ?>'));
+
+	// set the columns structure
+	summaryTable.setColumns([
+       {
+            label: 'Hook Type',
+            propertyName: 'hookType',
+            width: '10%',
+            getHtml: function(value, record) {
+                return summaryTable.createCheckboxColumn(value, record, summaryTable);
+            }
+       },
+       {
+           label: 'Hook Type',
+           propertyName: 'hookType',
+           width: '80%',
+       },
+       {
+			label: 'Count',
+			propertyName: 'count',
+			width: '10%',
+			attributes: {'class': 'zdb-numerical'},
+			getHtml: function(val) {
+				return '(' + val + ')';
+			}
+		}
+    ]);
+
+	// set by which column the user choice will filter
+	summaryTable.setFilterColumn('hookType');
+
+	// set callback function to create the table rows from all the data
+	// return an array of rows, with columns that match to setColumns
+	summaryTable.setUpdateCallback(function (data) {
+		if (! data) return [];
+
+		var aggregated = {};
+		$zendDevBar.each(data, function(key, observer){
+			observer.fileLine=observer.file+':'+observer.line;
+			//observer.actions='<a onclick="zray.showInIde(\''+observer.file+'\',\''+observer.line+'\')">show</a>';
+			if (aggregated[observer.hookType]) {
+				aggregated[observer.hookType]++;
+			} else {
+				aggregated[observer.hookType] = 1;
+			}
+		});
+
+		if (Object.keys(aggregated).length == 0) {
+			return [];
+		}
+		
+		var normalized = [];
+		normalized.push({'hookType': 'All', 'count': jQuery.map(aggregated, function(v){return v}).reduce(function(acc, item){return acc += item})});
+		
+		return normalized.concat($zendDevBar.map(aggregated, function(count, hookType){
+			return {'hookType': hookType, 'count': count};
+		}));
+	});
+	// create summary table - end
+
+	// create pager and search
+	zray.createPager(storage, jQuery('#<?php echo $params['pagerId']; ?>'));
+	zray.createSearch(storage, jQuery('#<?php echo $params['searchId']; ?>'), maintable);
+	
+	zray.registerDataHandler('wordpress', 'hooks', function(extensionData, requestData) {
+		
+		storage.setData(extensionData);
+	});
+})();
+</script>
