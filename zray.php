@@ -307,20 +307,31 @@ class Wordpress {
 	}
 	
 	private function storeHitsStatistics($wp_object_cache, &$storage) {
+	    $total = 0;
+	    foreach ($this->_cache_pie_size_statistics as $count) {
+	        $total += $count;
+	    }
 	    // General hits/misses data
-	    $storage['cacheStats'] = array('hits' => $wp_object_cache->cache_hits, 'misses' => $wp_object_cache->cache_misses);
+	    $storage['cacheStats'] = array('hits' => $wp_object_cache->cache_hits, 'misses' => $wp_object_cache->cache_misses, 'totalSize' => $total);
 	}
 	
 	private function storeCachePieStatistics(&$storage) {
-	    $sorted = $this->_cache_pie_size_statistics;
-	    sort($sorted);
-	    $sorted = array_reverse($sorted);
-	    $sorted = array_slice($sorted, 0, 7);
-	    
-	    $slicedSortedArray = array();
-	    foreach ($sorted as $sortedValue) {
-	       $name = array_search($sortedValue, $this->_cache_pie_size_statistics);
-	       $cachePieStats[] = array('name' => $name, 'count' => $sortedValue);
+	    $total = 0;
+	    foreach ($this->_cache_pie_size_statistics as $count) {
+	        $total += $count;
+	    }
+	    $percent15 = $total * 0.15;
+	    $cachePieStats = array();
+	    $otherCount = 0;
+	    foreach ($this->_cache_pie_size_statistics as $name => $value) {
+	        if ($value >= $percent15) {
+	           $cachePieStats[] = array('name' => $name, 'count' => $value);
+	        } else {
+	            $otherCount += $value;
+	        }
+	    }
+	    if ($otherCount > 0) {
+	       $cachePieStats[] = array('name' => 'Other', 'count' => $otherCount);
 	    }
 	    
 	    $storage['cachePieStats'] = $cachePieStats;

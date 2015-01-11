@@ -19,7 +19,7 @@
 }
 
 #zend-dev-bar table th, table td {
-    padding: 10px 10px 9px;
+    padding: 5px 4px 5px;
     line-height: 18px;
     text-align: left;
 }
@@ -42,8 +42,35 @@
 }
 
 #zend-dev-bar div.pieChartDiv {
-	display: inline-block;
-	width: 59%;
+	height: 390px;
+	position: relative;
+	overflow-y: auto;
+	width: 15%;
+	padding-bottom: 8px;
+	float: left;
+	padding-left: 20px;
+	padding-top: 15px;
 	vertical-align: middle;
-	padding-top: 50px;
+}
+
+#zend-dev-bar span.legendColorSpan {
+	height: 10px;
+	display: inline-block;
+	width: 10px;
+	margin-right: 7px;
+}
+
+#zend-dev-bar div.pieLegendDiv {
+	float: left;
+	width: 15%;
+	padding-top: 40px;
+}
+
+#zend-dev-bar div.cacheTableDiv {
+	min-height: 1px;
+	padding-right: 8px;
+	padding-left: 8px;
+	padding-bottom: 8px;
+	display: inline-block;
+	width: 69%;
 }
