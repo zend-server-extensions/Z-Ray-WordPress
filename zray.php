@@ -145,6 +145,7 @@ class Wordpress {
 						'function'=>$hookKey,
 						'file'=>$hooker['file'],
 						'line'=>$hooker['line'],
+						'filename'=>end(explode(DIRECTORY_SEPARATOR,$hooker['file'])),
 						'hookType'=>$hooker['hookType'],
 						'executionTime'=>$hooker['executionTime'].'ms',
 						'hookSource'=>$hooker['hookSource'],
@@ -226,6 +227,7 @@ class Wordpress {
 	}
 	public function registerHook($context,$type){
 		$type=str_replace('add_','',$type);
+		$type=ucfirst($type);
 		if(defined('WP_PLUGIN_DIR')&&strpos($context['calledFromFile'],realpath(WP_PLUGIN_DIR))!==false){
 			$matches=explode(DIRECTORY_SEPARATOR,str_replace(realpath(WP_PLUGIN_DIR),'',$context['calledFromFile']));
 			$hookSource=$matches[1];
@@ -246,7 +248,7 @@ class Wordpress {
 		$this->_hooks[$context['functionArgs'][0]][] = array(
 			'hookFunction'=>$context['functionArgs'][1],
 			'file'=>$context['calledFromFile'],
-			 'line'=>$context['calledFromLine'],
+			'line'=>$context['calledFromLine'],
 			'executionTime'=>$context['durationExclusive'],
 			'hookSource'=>$hookSource,
 			'hookType'=>$type,

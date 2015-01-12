@@ -22,11 +22,6 @@ $tableParams = array(
 			"sortable": true,
 		},
 		{
-			"label": "File Name",
-			"propertyName": "fileLine",
-			"sortable": true,
-		},
-		{
 			"label": "Hook Source",
 			"propertyName": "hookSource",
 			"sortable": true,
@@ -34,39 +29,30 @@ $tableParams = array(
 		{
 			"label": "Priority",
 			"propertyName": "priority",
+			"width":100,
 			"sortable": true,
 		},
 		{
 			"label": "Hook Type",
 			"propertyName": "hookType",
+			"width":100,
 			"sortable": true,
 		},
 		{
-			"label": "Execution Time",
+			"label": "Time",
 			"propertyName": "executionTime",
+			"width":70,
 			"sortable": true,
 		}
 	];
-	if(zendDevBar.showInIde){
+	if(zray.getFileActions && zray.showInIde){
 		cols.push({
-			label: 'Actions',
-			tooltip: 'Event actions',
-			propertyName: 'ruleId',
-			width: '78',
+			label: 'File Name',
+			tooltip: 'File actions',
+			propertyName: 'filename',
 			getHtml: function(val, rec) {
-				var actionsWrapper = $zendDevBar('<div></div>');
-				
-				
-				var showInIdeElem = $zendDevBar('<div class="zdb-table-action zdb-pull-left zdb-show-in-ide" title="Show in IDE"></div>'); 
-				
-				showInIdeElem.click(function() {
-					zendDevBar.spinner.show($zendDevBar(this).get(0));
-					zendDevBar.showInIde(rec.file,rec.line,document.location.href);
-				});
-				actionsWrapper.append(showInIdeElem);
-				
-				
-				return actionsWrapper;
+				var showInIDEParams = {filePath: rec.file, line: rec.line, fullUrl: document.location.href};
+				return zray.getFileActions(rec.fileLine, val, rec.file, showInIDEParams);
 			}
 		});
 	}
@@ -79,9 +65,9 @@ $tableParams = array(
 	// set the columns structure
 	summaryTable.setColumns([
        {
-            label: 'Hook Type',
+            label: ' ',
             propertyName: 'hookType',
-            width: '10%',
+            width: 40,
             getHtml: function(value, record) {
                 return summaryTable.createCheckboxColumn(value, record, summaryTable);
             }
@@ -112,7 +98,7 @@ $tableParams = array(
 
 		var aggregated = {};
 		$zendDevBar.each(data, function(key, observer){
-			observer.fileLine=observer.file+':'+observer.line;
+			observer.fileLine=observer.filename+':'+observer.line;
 			//observer.actions='<a onclick="zray.showInIde(\''+observer.file+'\',\''+observer.line+'\')">show</a>';
 			if (aggregated[observer.hookType]) {
 				aggregated[observer.hookType]++;
