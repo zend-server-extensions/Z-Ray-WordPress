@@ -66,7 +66,8 @@
 	padding-top: 40px;
 }
 
-#zend-dev-bar div.cacheTableDiv {
+#zend-dev-bar div.cacheTableDiv,
+#zend-dev-bar div.pieTableDiv{
 	min-height: 1px;
 	padding-right: 8px;
 	padding-left: 8px;

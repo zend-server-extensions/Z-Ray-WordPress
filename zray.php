@@ -71,18 +71,18 @@ class Wordpress {
 		}
 		
 		//Plugins List
+		$this->plugins=array();
 		try{
 			if ( ! function_exists( 'get_plugins' ) ) {
 				require_once ABSPATH . 'wp-admin/includes/plugin.php';
 			}
 			$apl=get_option('active_plugins');
 			$plugins=get_plugins();
-			
-			$activated_plugins=array();
+			$state_plugins=array();
 			if(is_array($apl) && count($plugins)>0){
 				foreach ($apl as $p){           
 					if(isset($plugins[$p])){
-						 array_push($activated_plugins, $p);
+						 array_push($state_plugins, $p);
 					}           
 				}
 			}
@@ -91,7 +91,7 @@ class Wordpress {
 			if(is_array($mupl) && count($plugins)>0){
 				foreach ($mupl as $p => $v){
 					$plugins[$p]=$v;
-					array_push($activated_plugins, $p);
+					array_push($state_plugins, $p);
 				}
 			}
 			
@@ -99,26 +99,51 @@ class Wordpress {
 			if(is_array($swplugs) && count($plugins)>0){
 				foreach ($swplugs as $p => $v){           
 					if(isset($plugins[$p])){
-						 array_push($activated_plugins, $p);
+						 array_push($state_plugins, $p);
 					}
 				}
 			}
 			if(count($plugins)>0){
 				foreach($plugins as $p=>$plugin){
-					$active='No';
-					if(in_array($p,$activated_plugins)){
-						$active='Yes'; 
+					$state='Off';
+					if(in_array($p,$state_plugins)){
+						$state='On'; 
 					}
-					$storage['plugins'][] = array('Name'=>$plugin['Name'],'Version'=>$plugin['Version'],'Activated'=>$active);
+					$this->plugins[] = array('name'=>$plugin['Name'],'version'=>$plugin['Version'],'state'=>$state,'path'=>$p,'loadtime'=>'0ms');
 				}
 			}
 		}catch(Exception $e){
 		}
-		
+		$pluginsTime=0;
 		if (count($this->_profilePlugins)>0) {
 			foreach($this->_profilePlugins as $name => $time){
-				$storage['pluginsProfiler'][] = array('Name'=>$name,'Load Time (microseconds)'=>$time);
+				$found=false;
+				$pluginsTime+=$time;
+				foreach($this->plugins as $key => $plugin){
+					if(strpos($plugin['path'] . DIRECTORY_SEPARATOR,$name)!==false){
+						$this->plugins[$key]['loadtime']=$time.'ms';
+						$found=true;
+					}
+				}
+				if(!$found){
+					$this->plugins[]=array('name'=>$name,'version'=>'?','state'=>'On','loadtime'=>$time);
+				}
 			}
+		}
+		$storage['plugins']=$this->plugins;
+		
+		// Store Plugins Stats
+		$pluginsOtherChart=0;
+		foreach($this->plugins as $plugin){
+			if($plugin['loadtime']>=$pluginsTime*0.15){
+				$storage['pluginsStats'][]=$plugin;
+			}else{
+				$pluginsOtherChart += $plugin['loadtime'];
+			}
+		}
+
+		if($pluginsOtherChart>0){
+			$storage['pluginsStats'][]=array('name'=>'Others','loadtime'=>$pluginsOtherChart);
 		}
 		if (count($this->_profileThemes)>0) {
 			$storage['themeProfiler'][] = $this->_profileThemes;

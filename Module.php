@@ -24,6 +24,15 @@ class Module extends \ZRay\ZRayModule {
 	                    'chart' => 'chart.js'
 	                )
 	            ),
+	            'plugins' => array(
+	                'display'       => true,
+	                'logo'          => 'logo.png',
+	                'menuTitle' 	=> 'Plugins',
+	                'panelTitle'	=> 'Plugins',
+	                'resources'     => array(
+	                    'chart' => 'chart.js'
+	                )
+	            ),
 				'hooks' => array(
 					'display'       => true,
 	                'logo'          => 'logo.png',
