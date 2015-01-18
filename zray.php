@@ -134,11 +134,13 @@ class Wordpress {
 		
 		// Store Plugins Stats
 		$pluginsOtherChart=0;
-		foreach($this->plugins as $plugin){
-			if($plugin['loadtime']>=$pluginsTime*0.15){
-				$storage['pluginsStats'][]=$plugin;
-			}else{
-				$pluginsOtherChart += $plugin['loadtime'];
+		if($pluginsTime>0){
+			foreach($this->plugins as $plugin){
+				if($plugin['loadtime']>=$pluginsTime*0.15){
+					$storage['pluginsStats'][]=$plugin;
+				}else{
+					$pluginsOtherChart += $plugin['loadtime'];
+				}
 			}
 		}
 

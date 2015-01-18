@@ -1,0 +1,5 @@
+@CHARSET "UTF-8";
+
+#zend-dev-bar [data-name="zrayExtension:wordpress/plugins"] div.pieChartDiv {
+	height:auto;
+}
