@@ -147,9 +147,6 @@ class Wordpress {
 		if($pluginsOtherChart>0){
 			$storage['pluginsStats'][]=array('name'=>'Others','loadtime'=>$pluginsOtherChart);
 		}
-		if (count($this->_profileThemes)>0) {
-			$storage['themeProfiler'][] = $this->_profileThemes;
-		}
 		
 				
 		//Hooks List
@@ -168,11 +165,12 @@ class Wordpress {
 					}else{
 						
 					}
+					$filename=explode(DIRECTORY_SEPARATOR,$hooker['file']);
 					$hookers[]=array(
 						'function'=>$hookKey,
 						'file'=>$hooker['file'],
 						'line'=>$hooker['line'],
-						'filename'=>end(explode(DIRECTORY_SEPARATOR,$hooker['file'])),
+						'filename'=>end($filename),
 						'hookType'=>$hooker['hookType'],
 						'executionTime'=>$hooker['executionTime'].'ms',
 						'hookSource'=>$hooker['hookSource'],
@@ -201,6 +199,14 @@ class Wordpress {
 				);
 			}
 		}
+		
+		//Theme Functions
+		if(isset($this->_themeFuncs)){
+			$theme_root_array = explode('\\',realpath(get_template_directory()));
+			$theme_dir_name = array_pop($theme_root_array);
+			$storage['theme'][]=array('data'=>$this->_themeFuncs,
+										'theme'=>$theme_dir_name);
+		}
 	}
 	public function pluginsFuncEnd($context,&$storage,$filename){
 		if(preg_match('/'.$this->plugins_dir_name.'\/(.*?)\//',$filename,$match)||preg_match('/'.$this->muplugins_dir_name.'\/(.*?)\//',$filename,$match)){
@@ -212,14 +218,20 @@ class Wordpress {
 		}
 	}
 	public function themesFuncEnd($context,&$storage,$filename){
-	    $theme_root_array = explode('\\',realpath(get_theme_root()));
+	    $template_directory=realpath(get_template_directory());
+		$theme_root_array = explode('\\',$template_directory);
 		$theme_dir_name = array_pop($theme_root_array);
+		if(!isset($this->_themeFuncs)){
+			$this->_themeFuncs=array();
+		}
 		if(preg_match('/'.preg_quote($theme_dir_name, '/').'\/(.*?)\//',$filename,$match)){
-			$theme=$match[1];
-			if(!isset($this->_profileThemes[$theme])){
-				$this->_profileThemes[$theme]=array();
-			}
-			$this->_profileThemes[$theme][$context['functionName']]=$context['durationExclusive'].'ms';
+			$this->_themeFuncs[]=array(
+				'name'=>$context['functionName'],
+				'time'=>$context['durationExclusive'],
+				'file'=>$filename,
+				'filename'=>str_replace($template_directory,'',$theme_dir_name. realpath($filename)),
+				'line'=>$context['calledFromLine']
+			);
 		}
 	}
 	public function initProfiler($type='plugins'){
@@ -230,7 +242,7 @@ class Wordpress {
 		switch($type){
 			case 'themes':
 				$func='themesFuncEnd';
-				$path = realpath(get_theme_root());
+				$path = realpath(get_template_directory());
 				break;
 			case 'mu-plugins':
 				$func='pluginsFuncEnd';

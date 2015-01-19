@@ -13,6 +13,7 @@ class Module extends \ZRay\ZRayModule {
             'defaultPanels' => array(
                 'cacheStats' => false,
                 'cachePieStats' => false,
+				'pluginsStats' => false
              ),
 	        'panels' => array(
 	            'cacheObjects' => array(
@@ -40,6 +41,12 @@ class Module extends \ZRay\ZRayModule {
 	                'panelTitle'	=> 'Hooks',
 	                'searchId' 		=> 'hooks-summary-table-search',
 	                'pagerId'		=> 'hooks-summary-table-pager',
+				),
+				'theme' => array(
+					'display'       => true,
+	                'logo'          => 'logo.png',
+	                'menuTitle' 	=> 'Theme',
+	                'panelTitle'	=> 'Theme',
 				)
 	         )
 	    );

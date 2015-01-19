@@ -55,6 +55,11 @@ $tableParams = array(
 				return zray.getFileActions(rec.fileLine, val, rec.file, showInIDEParams);
 			}
 		});
+	}else{
+		cols.push({
+			"label": "File Name",
+			"propertyName": "fileLine",
+		});
 	}
 	maintable.setColumns(cols);
 	// create main table - end

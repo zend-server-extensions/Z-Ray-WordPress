@@ -1,0 +1,73 @@
+<?php 
+$tableParams = array(
+	'tableId' 			=> 'samples-custom-table',
+    'tableWidth'        => '4',
+);
+?>
+
+<?php echo $this->zrayTable($tableParams); //zrayTableHtml ?>
+
+<script type="text/javascript">
+(function() {
+	var storage = zray.getStorage('samplesCustomTable');
+
+	// create main table
+	var maintable = zray.createTable(storage, jQuery('#<?php echo $tableParams['tableId']; ?>'));
+	var cols = [
+		{
+			"label": "Function",
+			"propertyName": "name",
+			"sortable": true,
+			"width": '20%'
+		},
+		{
+			"label": "Time",
+			"propertyName": "time",
+			"sortable": true,
+			"width": '20%',
+			"getHtml": function(value, record) {
+				return value + 'ms';
+			}		
+		}
+	];
+	
+	if(zray.getFileActions && zray.showInIde){
+		cols.push({
+			label: 'File Name',
+			tooltip: 'File actions',
+			propertyName: 'filename',
+			getHtml: function(val, rec) {
+				var showInIDEParams = {filePath: rec.file, line: rec.line, fullUrl: document.location.href};
+				return zray.getFileActions(rec.fileLine, val, rec.file, showInIDEParams);
+			}
+		});
+	}else{
+		cols.push({
+			"label": "File Name",
+			"propertyName": "fileLine",
+			"sortable": true,
+			"width": '20%'
+		});
+	}
+	
+	maintable.setColumns(cols);
+	// create main table - end
+
+	// create pager and search
+	zray.createPager(storage, jQuery('#<?php echo $params['pagerId']; ?>'));
+	zray.createSearch(storage, jQuery('#<?php echo $params['searchId']; ?>'), maintable);
+	
+	zray.registerDataHandler('wordpress', 'theme', function(extensionData, requestData) {
+		
+		var totalLoadTime = 0;
+		jQuery.each(extensionData[0]['data'],function(key,val){
+			extensionData[0]['data'][key].fileLine=val.filename+':'+val.line;
+			totalLoadTime+=val.time;
+		});
+		storage.setData(extensionData[0]['data']);
+		
+		jQuery('[data-name="zrayExtension:wordpress/theme"] h1').text(extensionData[0]['theme'] + ' (' + totalLoadTime +'ms)');
+	});
+	
+})();
+</script>
