@@ -1,0 +1,34 @@
+<?php
+$tableParams = array(
+	'tableId' 			=> 'wordpress-wpquery-tree',
+    'tableWidth'        => '4',
+);
+?>
+<div>
+    
+    <?php echo $this->zrayTable($tableParams); //zrayTableHtml ?>
+        
+</div>
+
+
+<script type="text/javascript">
+
+<?php echo $params['resources']['chart']; ?>
+
+(function() {
+	var storage = zray.getStorage('wp_query');
+	
+
+	// create main table
+	var maintable = zray.createTreeTable(storage, jQuery('#<?php echo $tableParams['tableId']; ?>'));
+
+	
+	(function() {
+		zray.registerDataHandler('wordpress', 'wp_query', function(extensionData, requestData) {
+			extensionData=extensionData[0];
+			storage.setData(extensionData);
+		});
+	})();
+})();
+</script>
+

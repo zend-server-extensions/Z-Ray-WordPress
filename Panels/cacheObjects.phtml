@@ -12,7 +12,9 @@ $tableParams = array(
     
     <div>
         <div>
-            <div class="pieChartDiv"><canvas id="cache-statistics-chart" width="200" height="200" /></div>
+            <div class="pieChartDiv">
+				<canvas id="cache-statistics-chart" width="170" height="170" />
+			</div>
             <div class="pieLegendDiv" id="cache-statistics-chart-lagend" width="100" height="100" ></div>
         </div>
     
@@ -54,6 +56,7 @@ $tableParams = array(
 		label: 'name',
 		propertyName: 'name',
 		width: '50%',
+		sortable:"true",
 		attributes: {'class': 'zdb-tree-table-cell-path zdb-ellipsis zdb-monospace'},
 		getHtml: function(val, rec) {
 			var cushion = $zendDevBar('<div>');
@@ -98,12 +101,7 @@ $tableParams = array(
 		label: 'hits',
 		propertyName: 'hits',
 		width: '25%',
-		attributes: {'class': 'zdb-monospace zdb-ellipsis'},
-		getHtml: function(val, rec) {
-			var cushion = $zendDevBar('<div>');
-			cushion.attr('title', val);
-			return cushion.text(val);
-		}
+		attributes: {'class': 'zdb-monospace zdb-ellipsis'}
 	}]);
 	// create main table - end
 
@@ -114,6 +112,7 @@ $tableParams = array(
 	});
 	zray.registerDataHandler('wordpress', 'cacheObjects', function(extensionData, requestData) {
 		storage.setData(extensionData);
+		jQuery('[data-name="zrayExtension:wordpress/cacheObjects"] .zdb-toolbar-info').append(' ('+extensionData.length+')');
 	});
 
 

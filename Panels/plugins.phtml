@@ -14,7 +14,6 @@ $tableParams = array(
         <div>
             <div class="pieChartDiv">
 				<canvas id="plugins-statistics-chart" width="170" height="170" />
-				
 			</div>
             <div class="pieLegendDiv" id="plugins-chart-lagend" width="100" height="100" ></div>
         </div>
@@ -115,6 +114,7 @@ $tableParams = array(
 
 	zray.registerDataHandler('wordpress', 'plugins', function(extensionData, requestData) {
 		storage.setData(extensionData);
+		jQuery('[data-name="zrayExtension:wordpress/plugins"] .zdb-toolbar-info').append(' ('+extensionData.length+')');
 	});
 
 

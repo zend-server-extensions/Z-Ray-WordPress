@@ -35,7 +35,16 @@ class Wordpress {
 	   }
 	}
 	
+	public function startMeasureTime(){
+		$this->_startTime=microtime(true);
+	}
+	
+	private function stopMeasureTime(){
+		$this->_wpRunTime=(microtime(true)-$this->_startTime)*1000;
+	}
+	
 	public function wpRunExit($context, &$storage){
+		$this->stopMeasureTime();
 		global $wp_object_cache,$wp_version;
 		
 	    $this->storeCacheObjects($wp_object_cache, $storage);
@@ -59,16 +68,7 @@ class Wordpress {
 			}
 		}
 		
-		//General Info
-		$storage['generalInfo'][] = array('Name'=>'Wordpress Version','Value'=>$wp_version);
-		$storage['generalInfo'][] = array('Name'=>'Debug Mode (WP_DEBUG)','Value'=>WP_DEBUG ? 'On' : 'Off');
-		$storage['generalInfo'][] = array('Name'=>'Debug Log (WP_DEBUG_LOG)','Value'=>WP_DEBUG_LOG ? 'On' : 'Off');
-		$storage['generalInfo'][] = array('Name'=>'Script Debug (SCRIPT_DEBUG)','Value'=>SCRIPT_DEBUG ? 'On' : 'Off');
-		$storage['generalInfo'][] = array('Name'=>'Template','Value'=>get_template());
-		$storage['generalInfo'][] = array('Name'=>'Doing Crons','Value'=>$doing_cron ? 'Yes' : 'No');
-		if ( defined( 'SAVEQUERIES' ) && SAVEQUERIES ) {
-		    $storage['generalInfo'][] = array('Name'=>'Save Queries (SAVEQUERIES)','Value'=>SAVEQUERIES ? 'On' : 'Off');
-		}
+		
 		
 		//Plugins List
 		$this->plugins=array();
@@ -207,6 +207,48 @@ class Wordpress {
 			$storage['theme'][]=array('data'=>$this->_themeFuncs,
 										'theme'=>$theme_dir_name);
 		}
+		
+		//General Info
+		$storage['generalInfo'][] = array('name'=>'Wordpress Version','value'=>$wp_version);
+		$storage['generalInfo'][] = array('name'=>'Debug Mode (WP_DEBUG)','value'=>WP_DEBUG ? 'On' : 'Off');
+		$storage['generalInfo'][] = array('name'=>'Debug Log (WP_DEBUG_LOG)','value'=>WP_DEBUG_LOG ? 'On' : 'Off');
+		$storage['generalInfo'][] = array('name'=>'Script Debug (SCRIPT_DEBUG)','value'=>SCRIPT_DEBUG ? 'On' : 'Off');
+		$storage['generalInfo'][] = array('name'=>'Template','value'=>get_template());
+		$storage['generalInfo'][] = array('name'=>'Doing Crons','value'=>$doing_cron ? 'Yes' : 'No');
+		$storage['generalInfo'][] = array('name'=>'Plugins Count','value'=>count($storage['plugins']));
+		if ( defined( 'SAVEQUERIES' ) && SAVEQUERIES ) {
+		    $storage['generalInfo'][] = array('name'=>'Save Queries (SAVEQUERIES)','value'=>SAVEQUERIES ? 'On' : 'Off');
+		}
+		
+		//Dashboard
+		$wpTime=$this->_wpRunTime/*-($pluginsTime+$this->_themeTime)*/;
+		$chart = array();
+		$chart[] = array('name'=>'Plugins','loadtime'=>$pluginsTime);
+		$chart[] = array('name'=>'Theme','loadtime'=>$this->_themeTime);
+		$chart[] = array('name'=>'WordPress','loadtime'=>$wpTime);
+		$storage['dashboard'][] = array(
+										'chart'=>$chart
+									);
+		//WP_Query
+		if($this->loadWPQueryPane()){
+			$storage['wp_query'][]=$this->_wpquery;
+		}
+	}
+	public function loadWPQueryPane(){
+		global $wp_query;
+		$this->_wpquery=array();
+		if(!empty($wp_query->query)){
+			$this->_wpquery['Query']=http_build_query( $wp_query->query );
+		}
+		if(!empty($wp_query->request)){
+			$this->_wpquery['Request']=$wp_query->request;
+		}
+		$this->_wpquery['Object']=get_queried_object();
+		$this->_wpquery['Object ID']=get_queried_object_id();
+		if(count($this->_wpquery)==0){
+			return false;
+		}
+		return true;
 	}
 	public function pluginsFuncEnd($context,&$storage,$filename){
 		if(preg_match('/'.$this->plugins_dir_name.'\/(.*?)\//',$filename,$match)||preg_match('/'.$this->muplugins_dir_name.'\/(.*?)\//',$filename,$match)){
@@ -224,7 +266,11 @@ class Wordpress {
 		if(!isset($this->_themeFuncs)){
 			$this->_themeFuncs=array();
 		}
+		if(!isset($this->_themeTime)){
+			$this->_themeTime=0;
+		}
 		if(preg_match('/'.preg_quote($theme_dir_name, '/').'\/(.*?)\//',$filename,$match)){
+			$this->_themeTime+=$context['durationExclusive'];
 			$this->_themeFuncs[]=array(
 				'name'=>$context['functionName'],
 				'time'=>$context['durationExclusive'],
@@ -398,6 +444,7 @@ $zre->traceFunction('wp', function() use ($zre,$zrayWordpress){
  }, function(){});
 
 $zre->traceFunction('wp_initial_constants', function() use ($zre,$zrayWordpress){ 
+	$zrayWordpress->startMeasureTime();
 	$zrayWordpress->initHookCatcher();
  }, function(){});
  

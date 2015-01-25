@@ -130,8 +130,8 @@ $tableParams = array(
 	zray.createSearch(storage, jQuery('#<?php echo $params['searchId']; ?>'), maintable);
 	
 	zray.registerDataHandler('wordpress', 'hooks', function(extensionData, requestData) {
-		
 		storage.setData(extensionData);
+		jQuery('[data-name="zrayExtension:wordpress/hooks"] .zdb-toolbar-info').append(' ('+extensionData.length+')');
 	});
 })();
 </script>

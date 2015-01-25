@@ -67,6 +67,7 @@ $tableParams = array(
 		storage.setData(extensionData[0]['data']);
 		
 		jQuery('[data-name="zrayExtension:wordpress/theme"] h1').text(extensionData[0]['theme'] + ' (' + totalLoadTime +'ms)');
+		jQuery('[data-name="zrayExtension:wordpress/theme"] .zdb-toolbar-info').append(' ('+extensionData[0]['data'].length+')');
 	});
 	
 })();

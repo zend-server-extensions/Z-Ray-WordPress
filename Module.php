@@ -13,27 +13,16 @@ class Module extends \ZRay\ZRayModule {
             'defaultPanels' => array(
                 'cacheStats' => false,
                 'cachePieStats' => false,
-				'pluginsStats' => false
+				'pluginsStats' => false,
+				'generalInfo' => false
              ),
 	        'panels' => array(
-	            'cacheObjects' => array(
-	                'display'       => true,
+				'wp_query' => array(
+					'display'       => true,
 	                'logo'          => 'logo.png',
-	                'menuTitle' 	=> 'Cache Objects',
-	                'panelTitle'	=> 'Cache Objects Data',
-	                'resources'     => array(
-	                    'chart' => 'chart.js'
-	                )
-	            ),
-	            'plugins' => array(
-	                'display'       => true,
-	                'logo'          => 'logo.png',
-	                'menuTitle' 	=> 'Plugins',
-	                'panelTitle'	=> 'Plugins',
-	                'resources'     => array(
-	                    'chart' => 'chart.js'
-	                )
-	            ),
+	                'menuTitle' 	=> 'WP Query',
+	                'panelTitle'	=> 'WP Query',
+				),
 				'hooks' => array(
 					'display'       => true,
 	                'logo'          => 'logo.png',
@@ -47,6 +36,30 @@ class Module extends \ZRay\ZRayModule {
 	                'logo'          => 'logo.png',
 	                'menuTitle' 	=> 'Theme',
 	                'panelTitle'	=> 'Theme',
+				),
+	            'plugins' => array(
+	                'display'       => true,
+	                'logo'          => 'logo.png',
+	                'menuTitle' 	=> 'Plugins',
+	                'panelTitle'	=> 'Plugins',
+	                'resources'     => array(
+	                    'chart' => 'chart.js'
+	                )
+	            ),
+	            'cacheObjects' => array(
+	                'display'       => true,
+	                'logo'          => 'logo.png',
+	                'menuTitle' 	=> 'Cache Objects',
+	                'panelTitle'	=> 'Cache Objects Data',
+	                'resources'     => array(
+	                    'chart' => 'chart.js'
+	                )
+	            ),
+				'dashboard' => array(
+					'display'       => true,
+	                'logo'          => 'logo.png',
+	                'menuTitle' 	=> 'Dashboard',
+	                'panelTitle'	=> 'Dashboard',
 				)
 	         )
 	    );
