@@ -43,6 +43,11 @@ $tableParams = array(
 			"propertyName": "executionTime",
 			"width":70,
 			"sortable": true,
+			getHtml: function(val, rec) {
+				var cushion = $zendDevBar('<div>');
+				cushion.attr('title', val);
+				return cushion.text(val+'ms');
+			}
 		}
 	];
 	if(zray.getFileActions && zray.showInIde){

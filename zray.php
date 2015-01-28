@@ -109,7 +109,7 @@ class Wordpress {
 					if(in_array($p,$state_plugins)){
 						$state='On'; 
 					}
-					$this->plugins[] = array('name'=>$plugin['Name'],'version'=>$plugin['Version'],'state'=>$state,'path'=>$p,'loadtime'=>'0ms');
+					$this->plugins[] = array('name'=>$plugin['Name'],'version'=>$plugin['Version'],'state'=>$state,'path'=>$p,'loadtime'=>'0');
 				}
 			}
 		}catch(Exception $e){
@@ -121,7 +121,7 @@ class Wordpress {
 				$pluginsTime+=$time;
 				foreach($this->plugins as $key => $plugin){
 					if(strpos($plugin['path'] . DIRECTORY_SEPARATOR,$name)!==false){
-						$this->plugins[$key]['loadtime']=$time.'ms';
+						$this->plugins[$key]['loadtime']=$time;
 						$found=true;
 					}
 				}
@@ -172,7 +172,7 @@ class Wordpress {
 						'line'=>$hooker['line'],
 						'filename'=>end($filename),
 						'hookType'=>$hooker['hookType'],
-						'executionTime'=>$hooker['executionTime'].'ms',
+						'executionTime'=>$hooker['executionTime'],
 						'hookSource'=>$hooker['hookSource'],
 						'priority'=>$hooker['priority']
 					);
@@ -221,11 +221,11 @@ class Wordpress {
 		}
 		
 		//Dashboard
-		$wpTime=$this->_wpRunTime/*-($pluginsTime+$this->_themeTime)*/;
 		$chart = array();
 		$chart[] = array('name'=>'Plugins','loadtime'=>$pluginsTime);
-		$chart[] = array('name'=>'Theme','loadtime'=>$this->_themeTime);
-		$chart[] = array('name'=>'WordPress','loadtime'=>$wpTime);
+		if(isset($this->_themeTime)){
+			$chart[] = array('name'=>'Theme','loadtime'=>$this->_themeTime);
+		}
 		$storage['dashboard'][] = array(
 										'chart'=>$chart
 									);

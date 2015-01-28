@@ -58,7 +58,9 @@ $tableParams = array(
 	zray.createSearch(storage, jQuery('#<?php echo $params['searchId']; ?>'), maintable);
 	
 	zray.registerDataHandler('wordpress', 'theme', function(extensionData, requestData) {
-		
+		if(!extensionData || !extensionData[0]){
+			return;
+		}
 		var totalLoadTime = 0;
 		jQuery.each(extensionData[0]['data'],function(key,val){
 			extensionData[0]['data'][key].fileLine=val.filename+':'+val.line;

@@ -97,7 +97,7 @@ $tableParams = array(
 		getHtml: function(val, rec) {
 			var cushion = $zendDevBar('<div>');
 			cushion.attr('title', val);
-			return cushion.text(val);
+			return cushion.text(val+'ms');
 		}
 	},
 	{
@@ -132,11 +132,13 @@ $tableParams = array(
 			if(!extensionData || extensionData.length==0){
 				var extensionData = [{
 						name: 'No Load Time',
-						loadtime: 1
+						loadtime: 0
 					}];
 			}
 			var pieData = [];
+			var loadtime=0;
 			jQuery.each(extensionData, function(key, data) {
+				loadtime+=data.loadtime;
 				pieData.push({
 					'label': data.name,
 					'value': parseFloat(data.loadtime),
@@ -144,6 +146,7 @@ $tableParams = array(
 					'highlight': colors[key].highlight,
 					});
 			});
+			jQuery('[data-name="zrayExtension:wordpress/plugins"] h1').append(' (' + loadtime +'ms)');
 			//String - A legend template
 			var options = { legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span class=\"legendColorSpan\" style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>"};
 			var ctx = document.getElementById("plugins-statistics-chart").getContext("2d");
