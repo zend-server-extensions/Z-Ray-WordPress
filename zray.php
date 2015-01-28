@@ -251,7 +251,7 @@ class Wordpress {
 		return true;
 	}
 	public function pluginsFuncEnd($context,&$storage,$filename){
-		if(preg_match('/'.$this->plugins_dir_name.'\/(.*?)\//',$filename,$match)||preg_match('/'.$this->muplugins_dir_name.'\/(.*?)\//',$filename,$match)){
+		if(preg_match('/'.preg_quote($this->plugins_dir_name,'/').'\/(.*?)\//',$filename,$match)||preg_match('/'.preg_quote($this->muplugins_dir_name,'/').'\/(.*?)\//',$filename,$match)){
 			$plugin=$match[1];
 			if(!isset($this->_profilePlugins[$plugin])){
 				$this->_profilePlugins[$plugin]=0;
