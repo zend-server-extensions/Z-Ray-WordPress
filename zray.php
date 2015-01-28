@@ -202,8 +202,8 @@ class Wordpress {
 		
 		//Theme Functions
 		if(isset($this->_themeFuncs)){
-			$theme_root_array = explode('\\',realpath(get_template_directory()));
-			$theme_dir_name = array_pop($theme_root_array);
+			$theme_root_array = explode(DIRECTORY_SEPARATOR,realpath(get_template_directory()));
+			$theme_dir_name = end($theme_root_array);
 			$storage['theme'][]=array('data'=>$this->_themeFuncs,
 										'theme'=>$theme_dir_name);
 		}
@@ -261,8 +261,8 @@ class Wordpress {
 	}
 	public function themesFuncEnd($context,&$storage,$filename){
 	    $template_directory=realpath(get_template_directory());
-		$theme_root_array = explode('\\',$template_directory);
-		$theme_dir_name = array_pop($theme_root_array);
+		$theme_root_array = explode(DIRECTORY_SEPARATOR,$template_directory);
+		$theme_dir_name = end($theme_root_array);
 		if(!isset($this->_themeFuncs)){
 			$this->_themeFuncs=array();
 		}
