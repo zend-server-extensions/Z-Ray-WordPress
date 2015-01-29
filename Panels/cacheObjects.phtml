@@ -5,8 +5,6 @@ $tableParams = array(
 );
 ?>
 
-<style><?php echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'cacheObjects.css')?></style>
-
     
 <div>
     
@@ -18,7 +16,7 @@ $tableParams = array(
             <div class="pieLegendDiv" id="cache-statistics-chart-lagend" width="100" height="100" ></div>
         </div>
     
-        <div class="generalTableDiv">
+        <div class="generalTableDiv" id="cacheTable">
               <fieldset>
             	<table id=general_table">
             		<tbody>
@@ -109,6 +107,7 @@ $tableParams = array(
 		$zendDevBar('#hitsCount').text(statsData[0]);
 		$zendDevBar('#missesCount').text(statsData[1]);
 		$zendDevBar('#totalSize').text(statsData[2] + " Kb");
+		jQuery('[data-name="zrayExtension:wordpress/cacheObjects"] .generalTableDiv').appendTo(jQuery('[data-name="zrayExtension:wordpress/cacheObjects"] .zdb-col-1-narrow'));
 	});
 	zray.registerDataHandler('wordpress', 'cacheObjects', function(extensionData, requestData) {
 		storage.setData(extensionData);
@@ -138,7 +137,10 @@ $tableParams = array(
 			});
 
 			//String - A legend template
-			var options = { legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span class=\"legendColorSpan\" style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>"};
+			var options = { 
+				tooltipTemplate: "<%=label%>: <%=value%>kb",
+				legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span class=\"legendColorSpan\" style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>"
+			};
 	       	var ctx = document.getElementById("cache-statistics-chart").getContext("2d");
 	       	var myPie = new Chart(ctx).Pie(pieData, options);
 	       	var legendText = myPie.generateLegend();

@@ -50,7 +50,7 @@ class Module extends \ZRay\ZRayModule {
 	                'display'       => true,
 	                'logo'          => 'logo.png',
 	                'menuTitle' 	=> 'Cache Objects',
-	                'panelTitle'	=> 'Cache Objects Data',
+	                'panelTitle'	=> 'Cache Objects',
 	                'resources'     => array(
 	                    'chart' => 'chart.js'
 	                )

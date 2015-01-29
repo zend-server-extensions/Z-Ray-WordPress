@@ -125,7 +125,10 @@ $tableParams = array(
 		});
 		
 		//String - A legend template
-		var options = { legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span class=\"legendColorSpan\" style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>"};
+		var options = { 
+				tooltipTemplate: "<%=label%>: <%=value%>ms",
+				legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span class=\"legendColorSpan\" style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>"
+			};
 		var ctx = document.getElementById("dashboard-statistics-chart").getContext("2d");
 	
 		var myPie = new Chart(ctx).Pie(pieData, options);

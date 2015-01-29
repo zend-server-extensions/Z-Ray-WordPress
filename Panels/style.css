@@ -30,7 +30,7 @@
     -webkit-padding-start: 2px;
     -webkit-padding-end: 2px;
     border: none;
-	font-size: 13px;
+	font-size: 12px;
     color: #404040;
 	padding-left: 9px;
 }
@@ -39,6 +39,10 @@
 	display: inline-block;
 	width: 40%;
 	vertical-align: middle;
+}
+#zend-dev-bar #cacheTable{
+	margin: 0;
+	margin-left: 140px;
 }
 
 #zend-dev-bar div.pieChartDiv {
