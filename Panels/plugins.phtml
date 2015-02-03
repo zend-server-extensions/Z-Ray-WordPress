@@ -15,7 +15,10 @@ $tableParams = array(
             <div class="pieChartDiv">
 				<canvas id="plugins-statistics-chart" width="170" height="170" />
 			</div>
-            <div class="pieLegendDiv" id="plugins-chart-lagend" width="100" height="100" ></div>
+            
+			<div class="pieLegendDiv" id="plugins-chart-lagend" width="100" height="100" >
+				<u>Load Times:</u>
+			</div>
         </div>
    </div>
    
@@ -90,15 +93,10 @@ $tableParams = array(
 		}
 	},
 	{
-		label: 'Time',
+		label: 'Time (ms)',
 		propertyName: 'loadtime',
 		width: '90',
-		attributes: {'class': 'zdb-monospace zdb-ellipsis'},
-		getHtml: function(val, rec) {
-			var cushion = $zendDevBar('<div>');
-			cushion.attr('title', val);
-			return cushion.text(val+'ms');
-		}
+		attributes: {'class': 'zdb-monospace zdb-ellipsis'}
 	},
 	{
 		label: 'Path',
@@ -132,7 +130,7 @@ $tableParams = array(
 			if(!extensionData || extensionData.length==0){
 				var extensionData = [{
 						name: 'No Load Time',
-						loadtime: 0
+						loadtime: 1
 					}];
 			}
 			var pieData = [];

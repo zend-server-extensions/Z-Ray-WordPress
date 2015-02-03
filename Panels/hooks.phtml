@@ -12,42 +12,49 @@ $tableParams = array(
 <script type="text/javascript">
 (function() {
 	var storage = zray.getStorage('hooks');
+	var storage_core = zray.getStorage('core_hooks');
 
 	// create main table
 	var maintable = zray.createTable(storage, jQuery('#<?php echo $tableParams['tableId']; ?>'));
 	var cols = [
 		{
-			"label": "Function",
+			label:"#",
+			"width":50,
+			"propertyName": "id",
+			sortable: true,
+		},
+		{
+			"label": "Type",
+			"propertyName": "hookType",
+			"width":100,
+			"sortable": true,
+		},
+		{
+			"label": "Hook",
+			"propertyName": "hookName",
+			"sortable": true,
+		},
+		{
+			"label": "Called By",
 			"propertyName": "function",
 			"sortable": true,
 		},
 		{
-			"label": "Hook Source",
+			"label": "Time (ms)",
+			"propertyName": "executionTime",
+			"width":70,
+			"sortable": true
+		},
+		{
+			"label": "Source",
 			"propertyName": "hookSource",
 			"sortable": true,
 		},
 		{
 			"label": "Priority",
 			"propertyName": "priority",
-			"width":100,
-			"sortable": true,
-		},
-		{
-			"label": "Hook Type",
-			"propertyName": "hookType",
-			"width":100,
-			"sortable": true,
-		},
-		{
-			"label": "Time",
-			"propertyName": "executionTime",
 			"width":70,
 			"sortable": true,
-			getHtml: function(val, rec) {
-				var cushion = $zendDevBar('<div>');
-				cushion.attr('title', val);
-				return cushion.text(val+'ms');
-			}
 		}
 	];
 	if(zray.getFileActions && zray.showInIde){
@@ -55,6 +62,7 @@ $tableParams = array(
 			label: 'File Name',
 			tooltip: 'File actions',
 			propertyName: 'filename',
+			"sortable": true,
 			getHtml: function(val, rec) {
 				var showInIDEParams = {filePath: rec.file, line: rec.line, fullUrl: document.location.href};
 				return zray.getFileActions(rec.fileLine, val, rec.file, showInIDEParams);
@@ -64,6 +72,7 @@ $tableParams = array(
 		cols.push({
 			"label": "File Name",
 			"propertyName": "fileLine",
+			"sortable": true,
 		});
 	}
 	maintable.setColumns(cols);
@@ -71,7 +80,14 @@ $tableParams = array(
 
 	// create the summary table
 	var summaryTable = zray.createSummaryTable(storage, jQuery('#<?php echo $tableParams['summaryTableId']; ?>'));
-
+	
+	var storedStateForCoreHooks = (zendDevBar.cookieParams && typeof (zendDevBar.cookieParams.displayWPCoreHooks) != 'undefined') ? 
+				zendDevBar.cookieParams.displayWPCoreHooks : false; //false - the default of show core hooks
+	var hideCoreHooks = (storedStateForCoreHooks == 0);
+	
+	summaryTable.setTableHeaderHtml('<th colspan="100%"><span id="zdb-show-hooks-core" class="zdb-show-summary-checkbox" title="Display entries for WordPress Core hooks">' +
+				'<input type="checkbox" name="zdb-show-hooks-core"> Core <span id="zdb-total-silenced-logs"></span>'+
+				'</span>Show</th>');
 	// set the columns structure
 	summaryTable.setColumns([
        {
@@ -97,6 +113,8 @@ $tableParams = array(
 			}
 		}
     ]);
+	
+	jQuery('#zdb-show-hooks-core input[type="checkbox"]').prop('checked', storedStateForCoreHooks);
 
 	// set by which column the user choice will filter
 	summaryTable.setFilterColumn('hookType');
@@ -134,9 +152,52 @@ $tableParams = array(
 	zray.createPager(storage, jQuery('#<?php echo $params['pagerId']; ?>'));
 	zray.createSearch(storage, jQuery('#<?php echo $params['searchId']; ?>'), maintable);
 	
+	zray.registerDataHandler('wordpress', 'core_hooks', function(extensionData, requestData) {
+		storage_core.setData(extensionData);
+	});
+	
 	zray.registerDataHandler('wordpress', 'hooks', function(extensionData, requestData) {
 		storage.setData(extensionData);
-		jQuery('[data-name="zrayExtension:wordpress/hooks"] .zdb-toolbar-info').append(' ('+extensionData.length+')');
+		if(storedStateForCoreHooks){
+			var coreHooksItems = zendDevBar.getStorage('core_hooks').detachData();
+			zendDevBar.getStorage('hooks').addData(coreHooksItems);
+		}
+		//jQuery('[data-name="zrayExtension:wordpress/hooks"] .zdb-toolbar-info').append(' ('+extensionData.length+')');
+	});
+	
+	
+	$zendDevBar(document).on('click', '#zdb-show-hooks-core', function(event) {
+			
+		// avoid double event on checkbox click
+		var $chkbx = $zendDevBar(':checkbox', this);
+		if (event.target.type && event.target.type.toLowerCase() == 'checkbox') {
+			$chkbx.prop('checked', !$chkbx.prop('checked'));
+		}
+		$chkbx.prop('checked', !$chkbx.prop('checked'));
+
+		
+
+		var $chkbx = $zendDevBar(':checkbox', this);
+		// rename for convenience
+		var newStateForHooksCoreParameter = $chkbx.prop('checked');
+		var hideCoreHooks = !newStateForHooksCoreParameter;
+
+		// remove / add core hooks to the data
+		if (hideCoreHooks) {
+			var coreHooksItems = zendDevBar.getStorage('hooks').detachData({hookCore:'1'});
+			zendDevBar.getStorage('core_hooks').addData(coreHooksItems);
+		} else {			
+			var coreHooksItems = zendDevBar.getStorage('core_hooks').detachData();
+			zendDevBar.getStorage('hooks').addData(coreHooksItems);
+		}
+		
+		// store the state
+		if (zendDevBar.cookieParams) {
+			zendDevBar.cookieParams.displayWPCoreHooks = newStateForHooksCoreParameter;
+			zendDevBar.updateCookieParams();
+		}
+		
+		
 	});
 })();
 </script>

@@ -51,6 +51,11 @@ class Wordpress {
 		$this->storeHitsStatistics($wp_object_cache, $storage);
 		$this->storeCachePieStatistics($storage);
 		
+		$schedules=array();
+		foreach(wp_get_schedules() as $key => $schedule){
+			$schedules[$key]=$schedule['display'];
+		}
+		
 		//Crons
 		$doing_cron=get_transient( 'doing_cron' );
 		if(is_array(_get_cron_array())){
@@ -58,10 +63,10 @@ class Wordpress {
 				foreach($crons as $name=>$cron){
 					foreach($cron as $subcron){
 						$storage['crons'][] = array(
-							'Hook'=>$name,
-							'Schedule'=>$subcron['schedule'],
-							'Next Execution'=>human_time_diff( $time ) . (time() > $time  ? ' ago' : ''),
-							'Arguments'=>count($subcron['args'])>0 ? print_r($subcron['args'],true) : ''
+							'hook'=>$name,
+							'schedule'=>empty($schedules[$subcron['schedule']]) ? $subcron['schedule'] : $schedules[$subcron['schedule']],
+							'nextExecution'=>human_time_diff( $time ) . (time() > $time  ? ' ago' : ''),
+							'arguments'=>count($subcron['args'])>0 ? print_r($subcron['args'],true) : ''
 						);
 					}
 				}
@@ -105,9 +110,9 @@ class Wordpress {
 			}
 			if(count($plugins)>0){
 				foreach($plugins as $p=>$plugin){
-					$state='Off';
+					$state='Inactive';
 					if(in_array($p,$state_plugins)){
-						$state='On'; 
+						$state='Active'; 
 					}
 					$this->plugins[] = array('name'=>$plugin['Name'],'version'=>$plugin['Version'],'state'=>$state,'path'=>$p,'loadtime'=>'0');
 				}
@@ -134,23 +139,43 @@ class Wordpress {
 		
 		// Store Plugins Stats
 		$pluginsOtherChart=0;
+		$pluginsArr=array();
+		$others=array();
 		if($pluginsTime>0){
 			foreach($this->plugins as $plugin){
 				if($plugin['loadtime']>=$pluginsTime*0.15){
-					$storage['pluginsStats'][]=$plugin;
+					$pluginsArr[]=$plugin;
 				}else{
+					$others[]=$plugin;
 					$pluginsOtherChart += $plugin['loadtime'];
 				}
 			}
 		}
-
+		
+		$count=3;
+		if(count($pluginsArr)<$count&&count($others)>0){
+			usort($others, function($a, $b){
+				return strcmp($b['loadtime'], $a['loadtime']);
+			});
+			if(count($others)<$count){
+				$count=count($others);
+			}
+			foreach(array_slice($others, 0, $count) as $item){
+				$pluginsArr[] = $item;
+				$pluginsOtherChart-=$item['loadtime'];
+			}
+		}
+		
+		$storage['pluginsStats'] = $pluginsArr;
+		
 		if($pluginsOtherChart>0){
 			$storage['pluginsStats'][]=array('name'=>'Others','loadtime'=>$pluginsOtherChart);
 		}
 		
-				
+		$incId=0;
 		//Hooks List
 		$hookers=array();
+		$core_hookers=array();
 		if(count($this->_hooks)>0){
 			foreach($this->_hooks as $hookName => $hook){
 				foreach($hook as $hooker){
@@ -166,20 +191,40 @@ class Wordpress {
 						
 					}
 					$filename=explode(DIRECTORY_SEPARATOR,$hooker['file']);
-					$hookers[]=array(
-						'function'=>$hookKey,
-						'file'=>$hooker['file'],
-						'line'=>$hooker['line'],
-						'filename'=>end($filename),
-						'hookType'=>$hooker['hookType'],
-						'executionTime'=>$hooker['executionTime'],
-						'hookSource'=>$hooker['hookSource'],
-						'priority'=>$hooker['priority']
-					);
+					if(!$hooker['hookCore']){
+						$hookers[]=array(
+							'id'=>++$incId,
+							'function'=>$hookKey,
+							'file'=>$hooker['file'],
+							'line'=>$hooker['line'],
+							'filename'=>end($filename),
+							'hookName'=>$hookName,
+							'hookType'=>$hooker['hookType'],
+							'executionTime'=>$hooker['executionTime'],
+							'hookSource'=>$hooker['hookSource'],
+							'priority'=>$hooker['priority'],
+							'hookCore'=>$hooker['hookCore']
+						);
+					}else{
+						$core_hookers[]=array(
+							'id'=>++$incId,
+							'function'=>$hookKey,
+							'file'=>$hooker['file'],
+							'line'=>$hooker['line'],
+							'filename'=>end($filename),
+							'hookName'=>$hookName,
+							'hookType'=>$hooker['hookType'],
+							'executionTime'=>$hooker['executionTime'],
+							'hookSource'=>$hooker['hookSource'],
+							'priority'=>$hooker['priority'],
+							'hookCore'=>$hooker['hookCore']
+						);
+					}
 				}
 			}
 		}
 		$storage['hooks']=$hookers;
+		$storage['core_hooks']=$core_hookers;
 		
 		//Filters List
 		if(count($this->_filters)>0){
@@ -243,7 +288,10 @@ class Wordpress {
 		if(!empty($wp_query->request)){
 			$this->_wpquery['Request']=$wp_query->request;
 		}
-		$this->_wpquery['Object']=get_queried_object();
+		if(!empty(get_queried_object())){
+			$this->_wpquery['Object']=get_queried_object();
+		
+		}
 		$this->_wpquery['Object ID']=get_queried_object_id();
 		if(count($this->_wpquery)==0){
 			return false;
@@ -313,6 +361,7 @@ class Wordpress {
 	public function registerHook($context,$type){
 		$type=str_replace('add_','',$type);
 		$type=ucfirst($type);
+		$hookCore=false;
 		if(defined('WP_PLUGIN_DIR')&&strpos($context['calledFromFile'],realpath(WP_PLUGIN_DIR))!==false){
 			$matches=explode(DIRECTORY_SEPARATOR,str_replace(realpath(WP_PLUGIN_DIR),'',$context['calledFromFile']));
 			$hookSource=$matches[1];
@@ -325,6 +374,7 @@ class Wordpress {
 		}else{
 			$hookSource='Core';
 			$type.=' (Core)';
+			$hookCore=true;
 		}
 		
 		if(!isset($this->_hooks[$context['functionArgs'][0]])){
@@ -337,6 +387,7 @@ class Wordpress {
 			'executionTime'=>$context['durationExclusive'],
 			'hookSource'=>$hookSource,
 			'hookType'=>$type,
+			'hookCore'=>$hookCore,
 			'priority'=>isset($context['functionArgs'][2]) ? $context['functionArgs'][2] : '10',
 		);
 	}
@@ -384,6 +435,7 @@ class Wordpress {
 	                $hits = $this->_cache_hits[$group][$group_item_name];
 	                $group_hits += $hits;
 	            }
+				
 	            $group_item_array[] = array('name' => $group_item_name, 'size' => $item_size .'k' , 'hits' => $hits);
 	            $this->_cache_pie_size_statistics[$group . "[" . $group_item_name . "]"] = floatval($item_size);
 	        }
@@ -410,14 +462,30 @@ class Wordpress {
 	    $percent15 = $total * 0.15;
 	    $cachePieStats = array();
 	    $otherCount = 0;
+		$others = array();
 	    foreach ($this->_cache_pie_size_statistics as $name => $value) {
 	        if ($value >= $percent15) {
 	           $cachePieStats[] = array('name' => $name, 'count' => $value);
 	        } else {
+				$others[] = array('name' => $name, 'count' => $value);
 	            $otherCount += $value;
 	        }
 	    }
+		$count=3;
+		if(count($cachePieStats)<$count&&count($others)>0){
+			usort($others, function($a, $b){
+				return strcmp($b['count'], $a['count']);
+			});
+			if(count($others)<$count){
+				$count=count($others);
+			}
+			foreach(array_slice($others, 0, $count) as $item){
+				$cachePieStats[] = $item;
+				$otherCount-=$item['count'];
+			}
+		}
 	    if ($otherCount > 0) {
+			
 	       $cachePieStats[] = array('name' => 'Other', 'count' => $otherCount);
 	    }
 	    

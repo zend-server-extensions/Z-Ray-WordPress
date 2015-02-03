@@ -14,9 +14,16 @@ class Module extends \ZRay\ZRayModule {
                 'cacheStats' => false,
                 'cachePieStats' => false,
 				'pluginsStats' => false,
+				'core_hooks' => false,
 				'generalInfo' => false
              ),
 	        'panels' => array(
+				'crons' => array(
+					'display'       => true,
+	                'logo'          => 'logo.png',
+	                'menuTitle' 	=> 'Crons',
+	                'panelTitle'	=> 'Crons',
+				),
 				'wp_query' => array(
 					'display'       => true,
 	                'logo'          => 'logo.png',
@@ -51,6 +58,7 @@ class Module extends \ZRay\ZRayModule {
 	                'logo'          => 'logo.png',
 	                'menuTitle' 	=> 'Cache Objects',
 	                'panelTitle'	=> 'Cache Objects',
+					'searchId' 		=> 'cache-table-search',
 	                'resources'     => array(
 	                    'chart' => 'chart.js'
 	                )
