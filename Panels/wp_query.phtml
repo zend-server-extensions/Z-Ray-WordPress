@@ -28,11 +28,14 @@ $tableParams = array(
 		zray.registerDataHandler('wordpress', 'wp_query', function(extensionData, requestData) {
 			extensionData=extensionData[0];
 			
-			
-			if(window.hljs){
-				jQuery('#wp_query_query span').html(hljs.highlightAuto(extensionData['Request']).value);
+			if(extensionData['Request']){
+				if(window.hljs){
+					jQuery('#wp_query_query span').html(hljs.highlightAuto(extensionData['Request']).value);
+				}else{
+					jQuery('#wp_query_query span').html(extensionData['Request']);
+				}			
 			}else{
-				jQuery('#wp_query_query span').html(extensionData['Request']);
+				jQuery('[data-name="zrayExtension:wordpress/wp_query"]').remove();
 			}
 			if(extensionData['Query']){
 				jQuery('#wp_query_args span').html(extensionData['Query']);
