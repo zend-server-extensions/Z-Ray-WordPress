@@ -424,7 +424,7 @@ class Wordpress {
 	    foreach ($wp_object_cache->cache as $group => $group_items) {
 	        $group_size = 0;
 	        $group_hits = 0;
-	        $group_item_array=array();
+	        $group_item_array=array();		
 	        foreach($group_items as $group_item_name => $group_item) {
 	    
 	            $item_size =  number_format( strlen( serialize( $group_item ) ) / 1024, 2 );
@@ -435,9 +435,14 @@ class Wordpress {
 	                $hits = $this->_cache_hits[$group][$group_item_name];
 	                $group_hits += $hits;
 	            }
-				
-	            $group_item_array[] = array('name' => $group_item_name, 'size' => $item_size .'k' , 'hits' => $hits);
-	            $this->_cache_pie_size_statistics[$group . "[" . $group_item_name . "]"] = floatval($item_size);
+				if(count($group_items)==1){
+					$group_item_array = $hits;
+					$this->_cache_pie_size_statistics[$group . "[" . $group_item_name . "]"] = floatval($item_size);
+				}else{
+					$group_item_array[] = array('name' => $group_item_name, 'size' => $item_size .'k' , 'hits' => $hits);
+					$this->_cache_pie_size_statistics[$group . "[" . $group_item_name . "]"] = floatval($item_size);
+				}
+	            
 	        }
 	        // we lose temprorally $group_hits
 	        $data_array[] = array('name' => $group, 'size' => $group_size .'k' , 'hits' => $group_item_array);
