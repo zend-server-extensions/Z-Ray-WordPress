@@ -78,7 +78,6 @@ $tableParams = array(
 		sortable:"true",
 		defaultSort: 'desc',
 		getHtml: function(val, rec) {
-			val=val.replace('k','');
 			var cushion = $zendDevBar('<div>');
 			cushion.attr('title', val);
 			return cushion.text(val);

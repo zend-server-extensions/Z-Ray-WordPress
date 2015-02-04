@@ -439,13 +439,13 @@ class Wordpress {
 					$group_item_array = $hits;
 					$this->_cache_pie_size_statistics[$group . "[" . $group_item_name . "]"] = floatval($item_size);
 				}else{
-					$group_item_array[] = array('name' => $group_item_name, 'size' => $item_size .'k' , 'hits' => $hits);
+					$group_item_array[] = array('name' => $group_item_name, 'size' => $item_size , 'hits' => $hits);
 					$this->_cache_pie_size_statistics[$group . "[" . $group_item_name . "]"] = floatval($item_size);
 				}
 	            
 	        }
 	        // we lose temprorally $group_hits
-	        $data_array[] = array('name' => $group, 'size' => $group_size .'k' , 'hits' => $group_item_array);
+	        $data_array[] = array('name' => $group, 'size' => $group_size , 'hits' => $group_item_array);
 	    }
 	    $storage['cacheObjects'] = $data_array;
 	}
