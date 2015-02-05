@@ -49,10 +49,6 @@ $tableParams = array(
 	
 	maintable.setColumns(cols);
 	// create main table - end
-
-	// create pager and search
-	zray.createPager(storage, jQuery('#<?php echo $params['pagerId']; ?>'));
-	zray.createSearch(storage, jQuery('#<?php echo $params['searchId']; ?>'), maintable);
 	
 	zray.registerDataHandler('wordpress', 'theme', function(extensionData, requestData) {
 		if(!extensionData || !extensionData[0]){
