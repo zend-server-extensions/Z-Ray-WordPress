@@ -1,6 +1,6 @@
 <?php 
 $tableParams = array(
-	'tableId' 			=> 'samples-custom-table',
+	'tableId' 			=> 'wp-theme-table',
     'tableWidth'        => '4',
 );
 ?>
@@ -9,7 +9,7 @@ $tableParams = array(
 
 <script type="text/javascript">
 (function() {
-	var storage = zray.getStorage('samplesCustomTable');
+	var storage = zray.getStorage('theme');
 
 	// create main table
 	var maintable = zray.createTable(storage, jQuery('#<?php echo $tableParams['tableId']; ?>'));
