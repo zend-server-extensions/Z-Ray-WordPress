@@ -1,0 +1,70 @@
+<?php 
+$tableParams = array(
+	'tableId' 			=> 'wp-theme-table',
+    'tableWidth'        => '4',
+);
+?>
+
+<?php echo $this->zrayTable($tableParams); //zrayTableHtml ?>
+
+<script type="text/javascript">
+(function() {
+	var storage = zray.getStorage('theme');
+
+	// create main table
+	var maintable = zray.createTable(storage, jQuery('#<?php echo $tableParams['tableId']; ?>'));
+	var cols = [
+		{
+			"label": "Theme",
+			"propertyName": "name",
+			"sortable": true,
+			"width": '20%'
+		},
+		{
+			"label": "Time (ms)",
+			"propertyName": "time",
+			"sortable": true,
+			"width": '20%'
+		}
+	];
+	
+	if(zray.getFileActions && zray.showInIde){
+		cols.push({
+			label: 'File Name',
+			tooltip: 'File actions',
+			propertyName: 'filename',
+			sortable:true,
+			getHtml: function(val, rec) {
+				var showInIDEParams = {filePath: rec.file, line: rec.line, fullUrl: document.location.href};
+				return zray.getFileActions(rec.fileLine, val, rec.file, showInIDEParams);
+			}
+		});
+	}else{
+		cols.push({
+			"label": "File Name",
+			"propertyName": "fileLine",
+			"sortable": true,
+			"width": '20%'
+		});
+	}
+	
+	maintable.setColumns(cols);
+	// create main table - end
+	
+	zray.registerDataHandler('wordpress', 'theme', function(extensionData, requestData) {
+		if(!extensionData || !extensionData[0]){
+			return;
+		}
+		var totalLoadTime = 0;
+		jQuery.each(extensionData[0]['data'],function(key,val){
+			extensionData[0]['data'][key].fileLine=val.filename+':'+val.line;
+			totalLoadTime+=val.time;
+		});
+		storage.setData(extensionData[0]['data']);
+		
+		jQuery('[data-name="zrayExtension:wordpress/theme"] h1').text('Theme - '+extensionData[0]['theme'] + ' (' + totalLoadTime +'ms)');
+		jQuery('[data-name="zrayExtension:wordpress/theme"] .zdb-toolbar-info').append(' ('+extensionData[0]['data'].length+')');
+	});
+	
+})();
+</script>

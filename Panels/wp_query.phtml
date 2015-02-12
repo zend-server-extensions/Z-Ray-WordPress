@@ -1,0 +1,52 @@
+<?php
+$tableParams = array(
+	'tableId' 			=> 'wordpress-wpquery-tree',
+    'tableWidth'        => '4',
+);
+?>
+<div>
+    <div class="wp-group-items">
+		<div id="wp_query_query"><strong class="zray_wp_title">SQL Query </strong><span></span></div>
+		<div id="wp_query_args"><strong class="zray_wp_title">Query Arguments </strong><span></span></div>
+    </div>
+	<?php echo $this->zrayTable($tableParams); //zrayTableHtml ?>
+        
+</div>
+
+
+<script type="text/javascript">
+
+(function() {
+	var storage = zray.getStorage('wp_query');
+	
+
+	// create main table
+	var maintable = zray.createTreeTable(storage, jQuery('#<?php echo $tableParams['tableId']; ?>'));
+
+	
+	(function() {
+		zray.registerDataHandler('wordpress', 'wp_query', function(extensionData, requestData) {
+			extensionData=extensionData[0];
+			
+			if(extensionData['Request']){
+				if(window.hljs){
+					jQuery('#wp_query_query span').html(hljs.highlightAuto(extensionData['Request']).value);
+				}else{
+					jQuery('#wp_query_query span').html(extensionData['Request']);
+				}			
+			}else{
+				jQuery('[data-name="zrayExtension:wordpress/wp_query"]').remove();
+			}
+			if(extensionData['Query']){
+				jQuery('#wp_query_args span').html(extensionData['Query']);
+			}else{
+				jQuery('#wp_query_args').remove();
+			}
+			if(extensionData['Object']){
+				storage.setData(extensionData['Object']);
+			}
+		});
+	})();
+})();
+</script>
+

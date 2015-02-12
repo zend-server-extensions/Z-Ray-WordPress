@@ -1,0 +1,55 @@
+<?php
+$tableParams = array(
+	'tableId' 			=> 'wordpress-crons-tree',
+    'tableWidth'        => '4',
+);
+?>
+<div>
+    
+    <?php echo $this->zrayTable($tableParams); //zrayTableHtml ?>
+        
+</div>
+
+
+<script type="text/javascript">
+
+(function() {
+	var storage = zray.getStorage('crons');
+	
+
+	// create main table
+	var maintable = zray.createGeneralTreeTable(storage, jQuery('#<?php echo $tableParams['tableId']; ?>'));
+	maintable.setColumns([
+		{
+			label: 'Hook',
+			propertyName: 'hook',
+			sortable:true,
+			width: '25%'
+		},
+		{
+			label: 'Schedule',
+			propertyName: 'schedule',
+			sortable:true,
+			width: '150px'
+		},
+		{
+			label: 'Next Execution',
+			propertyName: 'nextExecution',
+			sortable:true,
+			width: '100px'
+		},
+		{
+			label: 'Arguments',
+			sortable:true,
+			propertyName: 'arguments'
+		}
+	]);
+	
+	(function() {
+		zray.registerDataHandler('wordpress', 'crons', function(extensionData, requestData) {
+			storage.setData(extensionData);
+		});
+	})();
+})();
+</script>
+

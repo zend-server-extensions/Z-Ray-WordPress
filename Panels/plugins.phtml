@@ -1,27 +1,28 @@
 <?php 
 $tableParams = array(
-	'tableId' 			=> 'wordpress-cache-objects-tree',
+	'tableId' 			=> 'wordpress-plugins-tree',
     'tableWidth'        => '4',
 );
 ?>
+
+<style><?php echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'plugins.css')?></style>
 
     
 <div>
     
     <div>
-        <div >
+        <div>
             <div class="pieChartDiv">
-				<canvas id="cache-statistics-chart" width="170" height="170" />
+				<canvas id="plugins-statistics-chart" width="170" height="170" />
 			</div>
-            <div class="pieLegendDiv" id="cache-statistics-chart-lagend" width="100" height="100" >
-				<u>Largest Objects:</u>
+            
+			<div class="pieLegendDiv" id="plugins-chart-lagend" width="100" height="100" >
+				<u>Load Times:</u>
 			</div>
         </div>
-    
-     
    </div>
    
-   <div class="cacheTableDiv">
+   <div class="pieTableDiv">
      <?php echo $this->zrayTable($tableParams); //zrayTableHtml ?>
    </div>
         
@@ -33,14 +34,14 @@ $tableParams = array(
 <?php echo $params['resources']['chart']; ?>
 
 (function() {
-	var storage = zray.getStorage('wordpressCacheObjectsTree');
+	var storage = zray.getStorage('plugins');
 	// create main table
 	var maintable = zray.createGeneralTreeTable(storage, jQuery('#<?php echo $tableParams['tableId']; ?>'));
 	maintable.setColumns([{
 		label: 'name',
 		propertyName: 'name',
-		width: '50%',
-		sortable:"true",
+		width: '35%',
+		sortable:true,
 		attributes: {'class': 'zdb-tree-table-cell-path zdb-ellipsis zdb-monospace'},
 		getHtml: function(val, rec) {
 			var cushion = $zendDevBar('<div>');
@@ -71,12 +72,11 @@ $tableParams = array(
 		}
 	},
 	{
-		label: 'size (kb)',
-		propertyName: 'size',
-		width: '25%',
+		label: 'Version',
+		propertyName: 'version',
+		width: '100',
 		attributes: {'class': 'zdb-monospace zdb-ellipsis'},
-		sortable:"true",
-		defaultSort: 'desc',
+		sortable:true,
 		getHtml: function(val, rec) {
 			var cushion = $zendDevBar('<div>');
 			cushion.attr('title', val);
@@ -84,35 +84,45 @@ $tableParams = array(
 		}
 	},
 	{
-		label: 'hits',
-		propertyName: 'hits',
-		width: '25%',
-		sortable:"true",
+		label: 'State',
+		propertyName: 'state',
+		width: '70',
+		sortable:true,
+		attributes: {'class': 'zdb-monospace zdb-ellipsis'},
+		getHtml: function(val, rec) {
+			var cushion = $zendDevBar('<div>');
+			cushion.attr('title', val);
+			return cushion.text(val);
+		}
+	},
+	{
+		label: 'Time (ms)',
+		propertyName: 'loadtime',
+		width: '90',
+		sortable:true,
 		attributes: {'class': 'zdb-monospace zdb-ellipsis'}
+	},
+	{
+		label: 'Path',
+		propertyName: 'path',
+		sortable:true,
+		attributes: {'class': 'zdb-monospace zdb-ellipsis'},
+		getHtml: function(val, rec) {
+			var cushion = $zendDevBar('<div>');
+			cushion.attr('title', val);
+			return cushion.text(val);
+		}
 	}]);
-	
-	if(maintable.setRootHtml){
-		maintable.setRootHtml(function(children) {
-			var total = 0; 
-			jQuery.each(children,function(k,v){ 
-				total+=v.hits;
-			}); 
-			return total;
-		});
-	}
 	// create main table - end
 
-	zray.registerDataHandler('wordpress', 'cacheStats', function(statsData, requestData) {
-		jQuery('[data-name="zrayExtension:wordpress/cacheObjects"] h1').append(' <small>(General Statistics - Hits:'+statsData[0]+', Misses: '+statsData[1]+', Total Size: '+statsData[2]+'kb)</small>');
-	});
-	zray.registerDataHandler('wordpress', 'cacheObjects', function(extensionData, requestData) {
+	zray.registerDataHandler('wordpress', 'plugins', function(extensionData, requestData) {
 		storage.setData(extensionData);
-		jQuery('[data-name="zrayExtension:wordpress/cacheObjects"] .zdb-toolbar-info').append(' ('+extensionData.length+')');
+		jQuery('[data-name="zrayExtension:wordpress/plugins"] .zdb-toolbar-info').append(' ('+extensionData.length+')');
 	});
-	zray.createSearch(storage, jQuery('#<?php echo $params['searchId']; ?>'), maintable);
+
 
 	(function() {
-		zray.registerDataHandler('wordpress', 'cachePieStats', function(extensionData, requestData) {
+		zray.registerDataHandler('wordpress', 'pluginsStats', function(extensionData, requestData) {
 			var colors = [
 	            {'color': '#F7464A', 'highlight': '#FF5A5E'},
 	            {'color': '#46BFBD', 'highlight': '#5AD3D1'},
@@ -122,25 +132,34 @@ $tableParams = array(
 	            {'color': '#b48ead', 'highlight': '#b48eb3'},
 	            {'color': '#5B90BF', 'highlight': '#5bbabf'}
 	        ];
+			if(!extensionData || extensionData.length==0){
+				var extensionData = [{
+						name: 'No Load Time',
+						loadtime: 1
+					}];
+			}
 			var pieData = [];
+			var loadtime=0;
 			jQuery.each(extensionData, function(key, data) {
+				loadtime+=data.loadtime;
 				pieData.push({
 					'label': data.name,
-					'value': parseFloat(data.count),
+					'value': parseFloat(data.loadtime),
 					'color': colors[key].color,
 					'highlight': colors[key].highlight,
-				    });
+					});
 			});
-
+			jQuery('[data-name="zrayExtension:wordpress/plugins"] h1').append(' (' + loadtime +'ms)');
 			//String - A legend template
 			var options = { 
-				tooltipTemplate: "<%=label%>: <%=value%>kb",
+				tooltipTemplate: "<%=label%>: <%=value%>ms",
 				legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span class=\"legendColorSpan\" style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>"
 			};
-	       	var ctx = document.getElementById("cache-statistics-chart").getContext("2d");
-	       	var myPie = new Chart(ctx).Pie(pieData, options);
-	       	var legendText = myPie.generateLegend();
-	        $zendDevBar('#cache-statistics-chart-lagend').append(legendText);
+			var ctx = document.getElementById("plugins-statistics-chart").getContext("2d");
+		
+			var myPie = new Chart(ctx).Pie(pieData, options);
+			var legendText = myPie.generateLegend();
+	        $zendDevBar('#plugins-chart-lagend').append(legendText);
 		});
 	})();
 })();
