@@ -40,6 +40,7 @@ $tableParams = array(
 	{
 		label: 'Name',
 		propertyName: 'name',
+		sortable:true,
 		attributes: {'class': 'zdb-monospace zdb-ellipsis'},
 		getHtml: function(val, rec) {
 			var cushion = $zendDevBar('<div>');
@@ -50,6 +51,7 @@ $tableParams = array(
 	{
 		label: 'Value',
 		propertyName: 'value',
+		sortable:true,
 		attributes: {'class': 'zdb-monospace zdb-ellipsis'},
 		getHtml: function(val, rec) {
 			var cushion = $zendDevBar('<div>');

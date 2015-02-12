@@ -103,3 +103,22 @@ text-overflow: ellipsis;
 white-space: nowrap;
 overflow: hidden;
 }
+#zend-dev-bar .wp-group-items strong{
+	background: #ececec;
+	padding: 5px;
+	display: inline-block;
+	min-width: 120px;
+	margin-right: 5px;
+	font-size:13px;
+}
+#zend-dev-bar .wp-group-items>div{
+	border-bottom: 1px solid #eaeaea;
+}
+#zend-dev-bar .wp-group-items>div:last-child{
+	border-bottom:none;
+}
+#zend-dev-bar .wp-group-items{
+	margin: 0 15px;
+	border-radius: 3px;
+	border: 1px solid #ececec;
+}

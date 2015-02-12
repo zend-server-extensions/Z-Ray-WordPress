@@ -1,14 +1,13 @@
 <?php 
 $tableParams = array(
 	'tableId' 			=> 'hooks-table',
-    'tableWidth'        => '3',
+    'tableWidth'        => '3-wide',
     'summaryTableId'    => 'hooks-summary-table',
-    'summaryTableWidth' => '1',
+    'summaryTableWidth' => '1-narrow',
 );
 ?>
 
 <?php echo $this->zrayTable($tableParams); //zrayTableHtml ?>
-
 <script type="text/javascript">
 (function() {
 	var storage = zray.getStorage('hooks');
@@ -86,7 +85,7 @@ $tableParams = array(
 	var hideCoreHooks = (storedStateForCoreHooks == 0);
 	
 	summaryTable.setTableHeaderHtml('<th colspan="100%"><span id="zdb-show-hooks-core" class="zdb-show-summary-checkbox" title="Display entries for WordPress Core hooks">' +
-				'<input type="checkbox" name="zdb-show-hooks-core"> Core <span id="zdb-total-silenced-logs"></span>'+
+				'<input type="checkbox" name="zdb-show-hooks-core" style="height:auto;"> Core <span id="zdb-total-silenced-logs"></span>'+
 				'</span>Show</th>');
 	// set the columns structure
 	summaryTable.setColumns([

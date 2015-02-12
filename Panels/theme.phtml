@@ -33,6 +33,7 @@ $tableParams = array(
 			label: 'File Name',
 			tooltip: 'File actions',
 			propertyName: 'filename',
+			sortable:true,
 			getHtml: function(val, rec) {
 				var showInIDEParams = {filePath: rec.file, line: rec.line, fullUrl: document.location.href};
 				return zray.getFileActions(rec.fileLine, val, rec.file, showInIDEParams);

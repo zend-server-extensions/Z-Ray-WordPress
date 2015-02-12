@@ -41,6 +41,7 @@ $tableParams = array(
 		label: 'name',
 		propertyName: 'name',
 		width: '35%',
+		sortable:true,
 		attributes: {'class': 'zdb-tree-table-cell-path zdb-ellipsis zdb-monospace'},
 		getHtml: function(val, rec) {
 			var cushion = $zendDevBar('<div>');
@@ -75,6 +76,7 @@ $tableParams = array(
 		propertyName: 'version',
 		width: '100',
 		attributes: {'class': 'zdb-monospace zdb-ellipsis'},
+		sortable:true,
 		getHtml: function(val, rec) {
 			var cushion = $zendDevBar('<div>');
 			cushion.attr('title', val);
@@ -85,6 +87,7 @@ $tableParams = array(
 		label: 'State',
 		propertyName: 'state',
 		width: '70',
+		sortable:true,
 		attributes: {'class': 'zdb-monospace zdb-ellipsis'},
 		getHtml: function(val, rec) {
 			var cushion = $zendDevBar('<div>');
@@ -96,11 +99,13 @@ $tableParams = array(
 		label: 'Time (ms)',
 		propertyName: 'loadtime',
 		width: '90',
+		sortable:true,
 		attributes: {'class': 'zdb-monospace zdb-ellipsis'}
 	},
 	{
 		label: 'Path',
 		propertyName: 'path',
+		sortable:true,
 		attributes: {'class': 'zdb-monospace zdb-ellipsis'},
 		getHtml: function(val, rec) {
 			var cushion = $zendDevBar('<div>');
