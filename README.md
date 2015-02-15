@@ -4,6 +4,12 @@ Z-Ray-WordPress
 This is an extension to add functionality to the Zend Server Z-Ray. It will result 
 in additional tab(s) to be presented in the browser.
 
+Requirements
+------------
+
+This repository is under development and **not compatible** with the currently released version of Zend Server (8.0.2). [Check out the latest stable version](https://github.com/zend-server-extensions/Z-Ray-WordPress/releases/tag/8.0.1).
+
+
 Installation
 ------------
 
