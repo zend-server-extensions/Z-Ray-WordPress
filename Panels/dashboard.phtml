@@ -105,7 +105,7 @@ $tableParams = array(
 			{'color': '#b48ead', 'highlight': '#b48eb3'},
 			{'color': '#5B90BF', 'highlight': '#5bbabf'}
 		];
-		var wpTime = timeTotal/100;
+		var wpTime = timeTotal/1000;
 		var pieData = [];
 		var lastKey;
 		jQuery.each(dashboardData.chart, function(key, data) {
@@ -121,7 +121,7 @@ $tableParams = array(
 		
 		pieData.push({
 			'label': 'Core',
-			'value': (parseFloat(wpTime)/1000).toFixed(2)*1,
+			'value': parseFloat(wpTime).toFixed(2)*1,
 			'color': colors[++lastKey].color,
 			'highlight': colors[lastKey].highlight,
 		});
