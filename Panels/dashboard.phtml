@@ -121,7 +121,7 @@ $tableParams = array(
 		
 		pieData.push({
 			'label': 'Core',
-			'value': parseFloat(wpTime),
+			'value': (parseFloat(wpTime)/1000).toFixed(2)*1,
 			'color': colors[++lastKey].color,
 			'highlight': colors[lastKey].highlight,
 		});

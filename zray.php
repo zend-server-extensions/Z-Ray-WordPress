@@ -136,7 +136,6 @@ class Wordpress {
 			}
 		}
 		$storage['plugins']=$this->plugins;
-		
 		// Store Plugins Stats
 		$pluginsOtherChart=0;
 		$pluginsArr=array();
@@ -304,7 +303,7 @@ class Wordpress {
 			if(!isset($this->_profilePlugins[$plugin])){
 				$this->_profilePlugins[$plugin]=0;
 			}
-			$this->_profilePlugins[$plugin]+=$context['durationExclusive'];
+			$this->_profilePlugins[$plugin]+=number_format($context['durationExclusive']/1000,2)*1;
 		}
 	}
 	public function themesFuncEnd($context,&$storage,$filename){

@@ -84,7 +84,7 @@ $tableParams = array(
 	{
 		label: 'State',
 		propertyName: 'state',
-		width: '70',
+		width: '80',
 		sortable:true,
 		attributes: {'class': 'zdb-monospace zdb-ellipsis'},
 		getHtml: function(val, rec) {
@@ -139,19 +139,25 @@ $tableParams = array(
 			var pieData = [];
 			var loadtime=0;
 			jQuery.each(extensionData, function(key, data) {
-				loadtime+=data.loadtime;
+				loadtime+=data.loadtime*1;
+				var tooltip=data.name;
+				if(data.name.length>7){
+					tooltip=data.name.substring(0,6)+'.';
+				}
 				pieData.push({
-					'label': data.name,
+					'label': tooltip,
 					'value': parseFloat(data.loadtime),
 					'color': colors[key].color,
 					'highlight': colors[key].highlight,
 					});
 			});
+			loadtime = loadtime.toFixed(2);
 			jQuery('[data-name="zrayExtension:wordpress/plugins"] h1').append(' (' + loadtime +'ms)');
 			//String - A legend template
 			var options = { 
 				tooltipTemplate: "<%=label%>: <%=value%>ms",
-				legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span class=\"legendColorSpan\" style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>"
+				legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span class=\"legendColorSpan\" style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>",
+				tooltipFontSize: 10,
 			};
 			var ctx = document.getElementById("plugins-statistics-chart").getContext("2d");
 		
