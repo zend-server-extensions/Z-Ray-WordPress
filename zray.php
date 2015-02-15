@@ -437,13 +437,12 @@ class Wordpress {
 	            }
 				if(count($group_items)==1){
 					$group_item_array = $hits;
-					$this->_cache_pie_size_statistics[$group . "[" . $group_item_name . "]"] = floatval($item_size);
 				}else{
 					$group_item_array[] = array('name' => $group_item_name, 'size' => $item_size , 'hits' => $hits);
-					$this->_cache_pie_size_statistics[$group . "[" . $group_item_name . "]"] = floatval($item_size);
 				}
 	            
 	        }
+			$this->_cache_pie_size_statistics[$group] = floatval($group_size);
 	        // we lose temprorally $group_hits
 	        $data_array[] = array('name' => $group, 'size' => $group_size , 'hits' => $group_item_array);
 	    }
