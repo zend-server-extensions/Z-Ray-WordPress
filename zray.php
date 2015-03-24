@@ -287,9 +287,8 @@ class Wordpress {
 		if(!empty($wp_query->request)){
 			$this->_wpquery['Request']=$wp_query->request;
 		}
-		if(!empty(get_queried_object())){
-			$this->_wpquery['Object']=get_queried_object();
-		
+		if(!empty($queriedObject)){
+			$this->_wpquery['Object']=$queriedObject;
 		}
 		$this->_wpquery['Object ID']=get_queried_object_id();
 		if(count($this->_wpquery)==0){
