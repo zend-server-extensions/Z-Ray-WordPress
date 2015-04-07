@@ -41,34 +41,7 @@ $tableParams = array(
 		propertyName: 'name',
 		width: '50%',
 		sortable:"true",
-		attributes: {'class': 'zdb-tree-table-cell-path zdb-ellipsis zdb-monospace'},
-		getHtml: function(val, rec) {
-			var cushion = $zendDevBar('<div>');
-			/// either the node has children or this is an object with properties
-			if (rec.children > 0) {
-				cushion.addClass('zdb-tree-table-cell-path-expandable');
-			}
-			cushion.addClass('zdb-tree-table-cell-path-display');
-			
-			if (rec.parent.length > 1) {
-				cushion.css('margin-left', (18 * rec.level) + 'px');
-			}
-
-			cushion.click(function(event){
-				$zendDevBar(event.target).parent('td').click();
-			});
-
-			var formattedText = val;
-			if (typeof formattedText == 'string' && formattedText.trim().length == 0) {
-				formattedText = '[Empty String Key]';
-				cushion.addClass('zdb-tree-table-system-data');
-			} else if (formattedText > 32) {
-				cushion.attr('title', formattedText);
-				formattedText = zendDevBar.shorten(formattedText, 32);
-			}
-			
-			return cushion.text(formattedText);
-		}
+		attributes: {'class': 'zdb-tree-table-cell-path zdb-ellipsis zdb-monospace'}
 	},
 	{
 		label: 'size (kb)',
