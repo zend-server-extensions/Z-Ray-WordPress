@@ -156,6 +156,7 @@ $tableParams = array(
 	});
 	
 	zray.registerDataHandler('wordpress', 'hooks', function(extensionData, requestData) {
+		extensionData = extensionData || [];
 		storage.setData(extensionData);
 		if(storedStateForCoreHooks){
 			var coreHooksItems = zendDevBar.getStorage('core_hooks').detachData();
