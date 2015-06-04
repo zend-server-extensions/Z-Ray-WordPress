@@ -125,6 +125,9 @@ class Wordpress {
 				$found=false;
 				$pluginsTime+=$time;
 				foreach($this->plugins as $key => $plugin){
+					if(!isset($plugin['path'])){
+						continue;
+					}
 					if(strpos($plugin['path'] . DIRECTORY_SEPARATOR,$name)!==false){
 						$this->plugins[$key]['loadtime']=$time;
 						$found=true;
